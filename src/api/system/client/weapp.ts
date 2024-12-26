@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const weApp_BASE_URL = "/api/v1/isUsers";
+const weApp_BASE_URL = "/api/v1/wxUsers";
 
 const WeAppAPI = {  
   /** 获取小程序用户分页数据 */

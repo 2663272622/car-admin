@@ -1,13 +1,13 @@
 import request from "@/utils/request";
 
-const signIn_BASE_URL = "/api/v1/isSigns";
+const carMerchants_BASE_URL = "/api/v1/carMerchants";
 
 const WeAppAPI = {  
   /** 获取小程序用户分页数据 */
   getPage(queryParams) {
     // return request<any, PageResult<SchoolWallItem[]>>({
       return request({
-      url: `${signIn_BASE_URL}/page`,
+      url: `${carMerchants_BASE_URL}/page`,
       method: "get",
       params: queryParams,
     });
@@ -21,7 +21,7 @@ const WeAppAPI = {
    */
   getFormData(id: number) {
     return request<any, any>({
-      url: `${signIn_BASE_URL}/${id}/form`,
+      url: `${carMerchants_BASE_URL}/${id}/form`,
       method: "get",
     });
   },
@@ -31,7 +31,7 @@ const WeAppAPI = {
    */
   add(data: SchoolWallItem) {
     return request({
-      url: `${signIn_BASE_URL}`,
+      url: `${carMerchants_BASE_URL}`,
       method: "post",
       data: data,
     });
@@ -45,7 +45,7 @@ const WeAppAPI = {
    */
   update(id: number, data) {
     return request({
-      url: `${signIn_BASE_URL}/${id}`,
+      url: `${carMerchants_BASE_URL}/${id}`,
       method: "put",
       data: data,
     });
@@ -58,7 +58,7 @@ const WeAppAPI = {
    */
   deleteByIds(ids: string) {
     return request({
-      url: `${signIn_BASE_URL}/${ids}`,
+      url: `${carMerchants_BASE_URL}/${ids}`,
       method: "delete",
     });
   },

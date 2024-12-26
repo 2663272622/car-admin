@@ -1,12 +1,12 @@
-<!-- 话题管理 -->
+<!-- 挪车小程序商家管理 -->
 <template>
   <div class="app-container">
     <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="学生姓名" prop="createBy">
+        <el-form-item label="关键字" props="keywords">
           <el-input
-            v-model="queryParams.createBy"
-            placeholder="请输入姓名"
+            v-model="queryParams.keywords"
+            placeholder="请输入商店名称/电话/地址"
             @keyup.enter="handleQuery"
           />
         </el-form-item>
@@ -17,9 +17,9 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item> -->
-        <el-form-item label="选择学校" prop="tenantId"> 
+        <!-- <el-form-item label="选择学校" prop="tenantId"> 
           <schoolSelect  class="!w-[200px]" v-model="queryParams.tenantId"></schoolSelect>
-        </el-form-item>
+        </el-form-item> -->
 
         <!-- <el-form-item label="内容状态" prop="status">
           <el-select v-model="queryParams.status"  placeholder="全部" clearable class="!w-[100px]">
@@ -104,15 +104,39 @@
             />
           </template>
         </el-table-column>  -->
-        <el-table-column prop="schoolName" label="学校名称" min-width="150" />
-        <el-table-column prop="createBy" label="学生姓名" min-width="200" />
-        <el-table-column prop="continuousSignDays" label="连续签到天数" min-width="200" />
-        <el-table-column prop="maxSignDays" label="最大签到天数" min-width="200" />
-        <el-table-column prop="lastSignTime" label="上次签到时间" width="180">
+        <el-table-column prop="storeLogoUrl" label="商店图标" min-width="100">
           <template #default="scope">
-            <span>{{ formatApplyDate(scope.row.lastSignTime) }}</span>
+            <el-image
+              style="width: 50px; height: 50px;"
+              :src="`${IMG_BASE_URL + scope.row.storeLogoUrl + PREURL}`"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[`${IMG_BASE_URL + scope.row.storeLogoUrl }`]"
+              :initial-index="4"
+              fit="cover"
+              :lazy="true"
+              :preview-teleported	="true"
+              :z-index="9999"
+            />
+          </template>
+        </el-table-column> 
+        <el-table-column prop="merchantName" label="商店名称" min-width="150" />
+        <el-table-column prop="businessScope" label="经营业务" min-width="200" />
+        <el-table-column prop="contactPhone" label="联系电话" width="150" />
+        <el-table-column prop="openTime" label="开门时间" width="150">
+          <template #default="scope">
+            <span>{{ formatTimeFromArray(scope.row.openTime) }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="closeTime" label="关门时间" width="150">
+          <template #default="scope">
+            <span>{{ formatTimeFromArray(scope.row.closeTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="latitude" label="经度" width="150" />
+        <el-table-column prop="longitude" label="纬度" width="150" />
+        <el-table-column prop="storeDescription" label="商店描述" width="200" />
         <el-table-column prop="createDate" label="创建日期" width="180">
           <template #default="scope">
             <span>{{ formatApplyDate(scope.row.createDate) }}</span>
@@ -126,7 +150,7 @@
 
 
 
-        <!-- <el-table-column label="操作" fixed="right" align="left" width="200">
+        <el-table-column label="操作" fixed="right" align="left" width="200">
           <template #default="scope"> 
             <el-button
               v-hasPerm="['sys:dept:edit']"
@@ -159,7 +183,7 @@
               删除
             </el-button>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <schoolPagination 
         v-model:page-no="queryParams.pageNum" 
@@ -192,9 +216,9 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import signInAPI,{QueryParams} from "@/api/system/client/signin";
+import signInAPI from "@/api/system/client/carMerchants";
 import {formatApplyDate}  from '@/utils/datedisplay';
-import themeEdit from '@/views/client/signin/edit.vue'
+import themeEdit from '@/views/client/carMerchants/edit.vue'
 import { PREURL,IMG_BASE_URL } from "@/utils/const";
 import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
@@ -207,10 +231,7 @@ const loading = ref(false);
 const queryParams:any = reactive({
   tenantId:1,
   pageNum :1,
-  pageSize :10,
-  userName:"",
-  status:"",
-  identityType:"",
+  pageSize :10
 });
 
 const datePicker = ref([])
@@ -327,5 +348,17 @@ function handleDelete(id?: number) {
   );
 }
 
+function formatTimeFromArray(timeArray) {
+  if (!timeArray) {
+    return ""; 
+  }
+  else{
+    while (timeArray.length < 2) {
+    timeArray.push(0);
+  }
+  let [hours, minutes, seconds] = timeArray.map(num => String(num).padStart(2, '0'));
+  return `${hours}:${minutes}:${seconds}`;
+  }
+}
 
 </script>

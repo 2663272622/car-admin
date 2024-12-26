@@ -1,11 +1,11 @@
-<!-- 小程序用户表 -->
+<!-- 挪车小程序用户表 -->
 <template>
   <div class="app-container">
     <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="关键字" prop="keywords">
           <el-input
-            placeholder="请输入用户名/姓名/手机号"
+            placeholder="请输入用户名//手机号"
             v-model="queryParams.keywords"
             @keyup.enter="handleQuery"
           />
@@ -94,7 +94,7 @@
       >
         <!-- <el-table-column prop="sort" label="排序" width="100" /> -->
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="avatar" label="学生头像" min-width="100">
+        <el-table-column prop="avatar" label="用户头像" min-width="100">
           <template #default="scope">
             <el-image
               style="width: 50px; height: 50px;border-radius: 50%;"
@@ -111,8 +111,7 @@
             />
           </template>
         </el-table-column> 
-        <el-table-column prop="userName" label="学生姓名" min-width="150" />
-        <el-table-column prop="schoolName" label="学校名称" min-width="150" />
+        <el-table-column prop="userName" label="用户姓名" min-width="150" />
         <el-table-column label="身份类型" width="100" align="center">
           <template #default="scope">
             <!-- 身份类型字典翻译 -->
@@ -121,10 +120,9 @@
         </el-table-column>
         <el-table-column prop="phoneNumber" label="手机号" width="150" align="center" />
         <el-table-column prop="wxId" label="微信ID" min-width="200" />
-        <el-table-column prop="creditScore" label="信用评分" width="100" align="center" />
         <el-table-column prop="myInvitationCode" label="我的邀请码" width="150" align="center" />
         <el-table-column prop="invitedCode" label="受邀码" width="150"  align="center"/>
-        <el-table-column prop="integral" label="积分" width="100"  align="center" />
+        <el-table-column prop="cardBought" label="卡片已购买" width="100"  align="center" />
         <el-table-column prop="createDate" label="创建日期" width="180" align="center">
           <template #default="scope">
             <span>{{ formatApplyDate(scope.row.createDate) }}</span>

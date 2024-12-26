@@ -15,8 +15,8 @@
         </el-form-item>
         <el-form-item label="身份类型" prop="identityType">
           <el-select v-model="formData.identityType" placeholder="请选择身份类型">
-            <el-option :value="1" label="学生" />
-            <el-option :value="2" label="配送员" />
+            <el-option :value="0" label="商家" />
+            <el-option :value="1" label="用户" />
           </el-select>
         </el-form-item>
         <el-form-item label="手机号" prop="phoneNumber">

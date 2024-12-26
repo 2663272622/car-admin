@@ -7,12 +7,38 @@
       >
       <!-- :destroy-on-close="true" -->
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px" v-if="formKey">
-        <el-form-item label="用户名" prop="createBy"> 
-          <el-input v-model="formData.createBy" placeholder="请输入用户名" />
+        <el-form-item label="图片" prop="storeLogoUrl">
+          <schoolUpload parantPath="theme" v-model="formData.storeLogoUrl"></schoolUpload>
+        </el-form-item>
+        <el-form-item label="商店名称" prop="merchantName"> 
+          <el-input v-model="formData.merchantName" placeholder="请输入商店名称" />
         </el-form-item> 
-        <!-- <el-form-item label="密码" prop="password">
-          <el-input v-model="formData.password" placeholder="请输入密码" />
-        </el-form-item> -->
+        <el-form-item label="经营业务" prop="businessScope"> 
+          <el-input v-model="formData.businessScope" placeholder="请输入经营业务" />
+        </el-form-item> 
+        <el-form-item label="联系电话" prop="contactPhone"> 
+          <el-input v-model="formData.contactPhone" placeholder="请输入联系电话" />
+        </el-form-item> 
+        <el-form-item label="开门时间" prop="openTime"> 
+          <el-time-select
+            v-model="formData.openTime"
+            :max-time="formData.closeTime"
+            placeholder="开门时间"
+            start="00:00"
+            step="00:15"
+            end="24:00"
+          />
+        </el-form-item> 
+        <el-form-item label="关门时间" prop="closeTime"> 
+          <el-time-select
+            v-model="formData.closeTime"
+            :min-time="formData.openTime"
+            placeholder="关门时间"
+            start="00:00"
+            step="00:15"
+            end="24:00"
+          />
+        </el-form-item> 
         <!-- <el-form-item label="身份类型" prop="identityType">
           <el-select v-model="formData.identityType" placeholder="请选择身份类型">
             <el-option :value="1" label="学生" />
@@ -50,11 +76,10 @@
 </template>
 
 <script lang="ts" setup>
-import signInAPI from "@/api/system/client/signin";
+import signInAPI from "@/api/system/client/carMerchants";
 import { ElLoading } from "element-plus";
 import type { FormRules } from 'element-plus'
-import { c } from "vite/dist/node/types.d-aGj9QkWt";
-
+import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
 const props = defineProps({
   modelValue: {
     type: Boolean, 
@@ -95,7 +120,7 @@ watch(()=>modelValue.value,(newVal,oldVal)=>{
 
 const rules = reactive<FormRules>({
   // tenantId: [{ required: true, message: "学校不能为空", trigger: "change" }],
-  createBy: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
+  // createBy: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
   // invitedCode: [{ required: true, message: "邀请码不能为空", trigger: "blur" }],
 });
 
@@ -104,7 +129,8 @@ const formKey = ref(-1)
 const getInfo = async() =>{
   if(!props.id) return;
   const res = await signInAPI.getFormData(props.id) 
-  
+  res.openTime = formatTimeFromArray(res.openTime)
+  res.closeTime = formatTimeFromArray(res.closeTime)
   formData.value = res
   formKey.value = Math.random()
   console.log(res) 
@@ -165,6 +191,18 @@ const initForm = () => {
   }
 }
 
+function formatTimeFromArray(timeArray) {
+  if (!timeArray) {
+    return ""; 
+  }
+  else{
+    while (timeArray.length < 2) {
+    timeArray.push(0);
+  }
+  let [hours, minutes, seconds] = timeArray.map(num => String(num).padStart(2, '0'));
+  return `${hours}:${minutes}:${seconds}`;
+  }
+}
 </script>
 
 <style lang="scss" scoped></style>
