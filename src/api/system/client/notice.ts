@@ -1,13 +1,13 @@
 import request from "@/utils/request";
 
-const orders_BASE_URL = "/api/v1/isOrders";
+const notices_BASE_URL = "/api/v1/notices";
 
-const ordersAPI = {  
-  /** 获取小程序订单管理数据 */
+const noticesAPI = {  
+  /** 获取小程序用户分页数据 */
   getPage(queryParams) {
     // return request<any, PageResult<SchoolWallItem[]>>({
       return request({
-      url: `${orders_BASE_URL}/page`,
+      url: `${notices_BASE_URL}/page`,
       method: "get",
       params: queryParams,
     });
@@ -21,7 +21,7 @@ const ordersAPI = {
    */
   getFormData(id: number) {
     return request<any, any>({
-      url: `${orders_BASE_URL}/${id}/form`,
+      url: `${notices_BASE_URL}/${id}/form`,
       method: "get",
     });
   },
@@ -29,9 +29,9 @@ const ordersAPI = {
   /**
    * 新增小程序用户表
    */
-  add(data: OrdersItem) {
+  add(data: any) {
     return request({
-      url: `${orders_BASE_URL}`,
+      url: `${notices_BASE_URL}`,
       method: "post",
       data: data,
     });
@@ -45,7 +45,7 @@ const ordersAPI = {
    */
   update(id: number, data) {
     return request({
-      url: `${orders_BASE_URL}/${id}`,
+      url: `${notices_BASE_URL}/${id}`,
       method: "put",
       data: data,
     });
@@ -58,7 +58,7 @@ const ordersAPI = {
    */
   deleteByIds(ids: string) {
     return request({
-      url: `${orders_BASE_URL}/${ids}`,
+      url: `${notices_BASE_URL}/${ids}`,
       method: "delete",
     });
   },
@@ -78,31 +78,4 @@ const ordersAPI = {
  
 };
 
-export default ordersAPI;
-;
-/** 校园话题表新增对象 */
-export interface OrdersItem {
-  id:string;
-  themeId:string;
-  title:string;
-  content:string;
-  comment:number;
-  views:number;
-  heat:number;
-  frontUserId:string;
-  createDate:string;
-  updateDate:string;
-  createBy:string;
-  updateBy:string;
-} 
-
-export interface QueryParams{
-  tenantId?: string;
-  pageNum?: number;
-  pageSize?: number;
-  keywords?: string;
-  title?: string;
-  status?: string;
-  startTime?: string; 
-  endTime?: string;   
-};
+export default noticesAPI;

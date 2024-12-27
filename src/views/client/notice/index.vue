@@ -1,25 +1,15 @@
-<!-- 话题管理 -->
+<!-- 通知接口 -->
 <template>
   <div class="app-container">
     <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="话题" prop="title">
+        <el-form-item label="标题" prop="title">
           <el-input
             v-model="queryParams.title"
-            placeholder="请输入话题"
+            placeholder="请输入通知标题"
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="选择学校" prop="tenantId"> 
-          <schoolSelect  class="!w-[200px]" v-model="queryParams.tenantId"></schoolSelect>
-        </el-form-item>
-
-        <el-form-item label="内容状态" prop="status">
-          <el-select v-model="queryParams.status"  placeholder="全部" clearable class="!w-[100px]">
-            <el-option :value="1" label="正常" />
-            <el-option :value="0" label="禁用" />
-          </el-select>
-        </el-form-item> 
         <el-form-item label="查询时间范围" prop="createTime"> 
           <el-date-picker
             v-model="datePicker"
@@ -40,9 +30,16 @@
         </el-form-item>
       </el-form>
     </div>
-
     <el-card shadow="never">
       <div class="mb-10px">
+        <el-button
+          v-hasPerm="['sys:dept:add']"
+          type="success"
+          icon="plus"
+          @click="GenerateDialog = true"
+        >
+          批量生成
+        </el-button>
         <el-button
           v-hasPerm="['sys:dept:add']"
           type="success"
@@ -61,7 +58,6 @@
           删除
         </el-button>
       </div>
-
       <el-table
         v-loading="loading"
         :data="tableList"
@@ -70,9 +66,8 @@
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         @selection-change="handleSelectionChange"
       >
-        <!-- <el-table-column prop="sort" label="排序" width="100" /> -->
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="imagePath" label="主图" width="200">
+        <!-- <el-table-column prop="imagePath" label="主图" width="200">
           <template #default="scope">
             <el-image
               style="width: 100px; height: 100px"
@@ -88,44 +83,31 @@
               :z-index="9999"
             />
           </template>
-        </el-table-column> 
-        <el-table-column prop="title" label="话题" min-width="200" />
-        <el-table-column prop="content" label="内容" min-width="200" />
-        <el-table-column prop="schoolName" label="学校名称" min-width="200" />
-        <el-table-column prop="ext1" label="附图" width="200">
-          <template #default="scope">
-            <el-upload
-              class="table-pre"
-              :file-list="handleUrl(scope.row.ext1)"
-              list-type="picture-card"
-              disabled
-              multiple
-              :on-preview="(uploadFile)=>handlePictureCardPreview(uploadFile,scope.row.ext1)"
-              /> 
-          </template>
-        </el-table-column> 
-        
-        <el-table-column prop="comment" label="评论量" min-width="200" />
-        <!-- <el-table-column prop="likes" label="点赞数" min-width="200" /> -->
-        <el-table-column prop="views" label="浏览量" min-width="200" />
-        <el-table-column prop="heat" label="热度" min-width="200" />
-        <!-- <el-table-column prop="integral" label="积分" min-width="200" /> -->
-        <el-table-column prop="createDate" label="创建日期" width="180">
-          <template #default="scope">
-            <span>{{ formatApplyDate(scope.row.createDate) }}</span>
+        </el-table-column>  -->
+        <el-table-column prop="title" label="标题" min-width="200" />
+        <el-table-column prop="publisherName" label="发布人" min-width="100" />
+        <el-table-column prop="level" label="等级" width="100" />
+        <el-table-column prop="targetType" label="公告类型" width="100" align="center" >
+        <template #default="scope">
+            <el-tag v-if="scope.row.targetType === 1" type="success">全体用户</el-tag>
+            <el-tag v-else-if="scope.row.targetType === 2" type="info">指定用户</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="updateDate" label="更新日期" width="180">
+        <el-table-column prop="publishStatus" label="公布状态" width="80">
           <template #default="scope">
-            <span>{{ formatApplyDate(scope.row.updateDate) }}</span>
+            <el-tag v-if="scope.row.publishStatus === 1" type="success">公布</el-tag>
+            <el-tag v-else-if="scope.row.publishStatus === 0" type="info">未公布</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="isRead" label="是否已读" width="100" align="center" />
+        <el-table-column prop="publishTime" label="发布时间" width="180" align="center"/>
+        <el-table-column prop="createTime" label="创建时间" width="180" align="center"/>
+        <el-table-column prop="revokeTime" label="撤销时间" width="180" align="center"/>
 
 
         <el-table-column label="操作" fixed="right" align="left" width="200">
           <template #default="scope"> 
             <el-button
-              v-hasPerm="['sys:dept:edit']"
               type="primary"
               link
               size="small"
@@ -163,7 +145,6 @@
         :total="total"
       />
     </el-card>
-
     <themeEdit
       v-model="showEdit"
       :title="dialog.title"
@@ -179,6 +160,29 @@
       :url-list="preData.urls"
       @close="preData.showPre = false"
     /> 
+
+    <div>
+      <el-dialog
+      width="600px"
+      v-model="GenerateDialog"
+      title="批量生成挪车码"
+      >
+      <el-form ref="formRef" :model="Generate" label-width="100px">
+        <el-form-item label="生成数量" prop="number">
+          <el-input v-model="Generate.number" placeholder="请输入生成数量" />
+        </el-form-item>
+        <el-form-item label="上传url" prop="url">
+          <el-input v-model="Generate.url" placeholder="请输入上传url" />
+        </el-form-item>
+      </el-form>
+      <template #footer >
+        <div>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
+          <el-button @click="GenerateDialog = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -187,11 +191,10 @@ defineOptions({
   name: "Theme",
   inheritAttrs: false,
 });
-
-import schoolSelect from "@/components/commonSelect/schoolSelect.vue";
-import SchoolThemeAPI,{QueryParams} from "@/api/system/school/theme";
 import {formatApplyDate}  from '@/utils/datedisplay';
-import themeEdit from '@/views/school/schoolTheme/edit.vue'
+import schoolSelect from "@/components/commonSelect/schoolSelect.vue";
+import noticesAPI from "@/api/system/client/notice";
+import themeEdit from '@/views/client/notice/edit.vue'
 import { PREURL,IMG_BASE_URL } from "@/utils/const";
 import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
@@ -201,15 +204,12 @@ const queryFormRef = ref(ElForm);
 const loading = ref(false);
 
 
-const queryParams: QueryParams = reactive({
+const queryParams: any = reactive({
   tenantId:1,
   pageNum :1,
   pageSize :10,
-  title: "",
-  status: "",
 });
 
-const datePicker = ref([])
 
 
 const tableList = ref([]); 
@@ -226,15 +226,12 @@ watch(
 // 修改查询函数，确保在查询时使用正确的分页参数
 function handleQuery() {
   loading.value = true;
-  let [ startTime = '', endTime = '' ] = datePicker.value;
   let params = {
     ...queryParams,
     pageNum: queryParams.pageNum,
     pageSize: queryParams.pageSize
   } 
-  startTime && (params.startTime = startTime);
-  endTime && (params.endTime = endTime);
-  SchoolThemeAPI.getPage(params).then((data:any) => {
+  noticesAPI.getPage(params).then((data:any) => {
     tableList.value = data.list;
     total.value = data.total;
     loading.value = false;
@@ -244,7 +241,6 @@ handleQuery()
 
 // 重置查询时重置页码
 function handleResetQuery() {
-  datePicker.value = []; 
   queryFormRef.value.resetFields();
   queryParams.pageNum = 1; // 重置页码到第一页
   handleQuery();
@@ -308,7 +304,7 @@ function handleDelete(id?: number) {
   }).then(
     () => {
       loading.value = true;
-      SchoolThemeAPI.deleteByIds(ids)
+      noticesAPI.deleteByIds(ids)
         .then(() => {
           ElMessage.success("删除成功");
           handleResetQuery();
@@ -321,5 +317,26 @@ function handleDelete(id?: number) {
   );
 }
 
-
+const GenerateDialog = ref(false)
+const Generate = reactive({
+  number:'',
+  url:''
+})
+// 提交表单
+function handleSubmit() {
+  // formRef.value.validate((valid: any) => {
+  //   if (valid) {
+  //     const loading = ElLoading.service({
+  //       lock: true,
+  //       text: 'Loading',
+  //       background: 'rgba(0, 0, 0, 0.7)',
+  //     })  
+      noticesAPI.generated(Generate.number,Generate.url)
+        .then(() => {
+          ElMessage.success("操作成功");
+          handleResetQuery();
+        })
+        .finally(() => (GenerateDialog.value = false));
+} 
 </script>
+

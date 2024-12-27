@@ -1,32 +1,22 @@
-<!-- 悬赏表 -->
+<!-- 挪车码管理carMoveCodes -->
 <template>
   <div class="app-container">
     <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="发布者/内容" prop="keywords">
+        <el-form-item label="话题" prop="title">
           <el-input
-            placeholder="发布者/内容"
-            v-model="queryParams.keywords"
+            v-model="queryParams.title"
+            placeholder="请输入话题"
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="选择学校" prop="tenantId"> 
-          <schoolSelect  class="!w-[200px]" v-model="queryParams.tenantId"></schoolSelect>
-        </el-form-item>
-        <el-form-item label="订单状态" prop="rewardStatus">
-          <dict-select v-model="queryParams.rewardStatus" code="rewardStatus" placeholder="请选择订单状态"></dict-select>
+
+        <el-form-item label="内容状态" prop="status">
+          <el-select v-model="queryParams.status"  placeholder="全部" clearable class="!w-[100px]">
+            <el-option :value="1" label="正常" />
+            <el-option :value="0" label="禁用" />
+          </el-select>
         </el-form-item> 
-        <el-form-item label="查询时间范围" prop="createTime"> 
-          <el-date-picker
-            v-model="datePicker"
-            type="datetimerange" 
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format ="YYYY-MM-DD HH:mm:ss" 
-          />
-        </el-form-item>
         
         <el-form-item>
           <el-button class="filter-item" type="primary" icon="search" @click="handleQuery">
@@ -36,9 +26,16 @@
         </el-form-item>
       </el-form>
     </div>
-
     <el-card shadow="never">
       <div class="mb-10px">
+        <el-button
+          v-hasPerm="['sys:dept:add']"
+          type="success"
+          icon="plus"
+          @click="GenerateDialog = true"
+        >
+          批量生成
+        </el-button>
         <el-button
           v-hasPerm="['sys:dept:add']"
           type="success"
@@ -57,7 +54,6 @@
           删除
         </el-button>
       </div>
-
       <el-table
         v-loading="loading"
         :data="tableList"
@@ -66,9 +62,8 @@
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         @selection-change="handleSelectionChange"
       >
-        <!-- <el-table-column prop="sort" label="排序" width="100" /> -->
         <el-table-column type="selection" width="55" align="center" />
-        <!-- <el-table-column prop="imagePath" label="主图" min-width="200">
+        <!-- <el-table-column prop="imagePath" label="主图" width="200">
           <template #default="scope">
             <el-image
               style="width: 100px; height: 100px"
@@ -85,32 +80,18 @@
             />
           </template>
         </el-table-column>  -->
-        <el-table-column prop="schoolName" label="学校名称" min-width="150" />
-        <el-table-column prop="createBy" label="发布者" width="150" />
-        <el-table-column prop="pickupSide" label="接单员" width="150" />
-        <el-table-column label="订单情况" width="100" align="center">
+        <el-table-column prop="carNumber" label="车牌号" width="120" />
+        <el-table-column prop="phoneNumber" label="联系电话" width="150" />
+        <el-table-column prop="messageText" label="消息内容" min-width="200" />
+        <el-table-column prop="contactRemark" label="联系人备注" min-width="200" />
+        <el-table-column prop="active" label="是否激活" width="80">
           <template #default="scope">
-            <!-- 身份类型字典翻译 -->
-            <DictLabel v-model="scope.row.rewardStatus" code="rewardStatus" />
+            <el-tag v-if="scope.row.active === 1" type="success">激活</el-tag>
+            <el-tag v-else-if="scope.row.active === 0" type="danger">未激活</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="rewardAmount" label="奖励金额" width="100" align="right"/>
-        <el-table-column label="奖励类型" width="100" align="center">
-          <template #default="scope">
-            <!-- 奖励类型字典翻译 -->
-            <DictLabel v-model="scope.row.rewardType" code="rewardType" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="contentDescription" label="内容" min-width="200" />
-        <el-table-column prop="specifications" label="规格说明" min-width="200" />
-        <el-table-column prop="pickupSide" label="取件地址"min-width="140" />
-        <el-table-column prop="addressDetail" label="收件地址"min-width="140" />
-        <el-table-column prop="createDate" label="创建日期" width="180" align="center">
-          <template #default="scope">
-            <span>{{ formatApplyDate(scope.row.createDate) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="updateDate" label="更新日期" width="180" align="center">
+        <el-table-column prop="usageCount" label="使用次数" width="100" align="center" />
+        <el-table-column prop="updateDate" label="更新日期" width="180">
           <template #default="scope">
             <span>{{ formatApplyDate(scope.row.updateDate) }}</span>
           </template>
@@ -120,7 +101,6 @@
         <el-table-column label="操作" fixed="right" align="left" width="200">
           <template #default="scope"> 
             <el-button
-              v-hasPerm="['sys:dept:edit']"
               type="primary"
               link
               size="small"
@@ -158,7 +138,6 @@
         :total="total"
       />
     </el-card>
-
     <themeEdit
       v-model="showEdit"
       :title="dialog.title"
@@ -174,6 +153,29 @@
       :url-list="preData.urls"
       @close="preData.showPre = false"
     /> 
+
+    <div>
+      <el-dialog
+      width="600px"
+      v-model="GenerateDialog"
+      title="批量生成挪车码"
+      >
+      <el-form ref="formRef" :model="Generate" label-width="100px">
+        <el-form-item label="生成数量" prop="number">
+          <el-input v-model="Generate.number" placeholder="请输入生成数量" />
+        </el-form-item>
+        <el-form-item label="上传url" prop="url">
+          <el-input v-model="Generate.url" placeholder="请输入上传url" />
+        </el-form-item>
+      </el-form>
+      <template #footer >
+        <div>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
+          <el-button @click="GenerateDialog = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -182,11 +184,10 @@ defineOptions({
   name: "Theme",
   inheritAttrs: false,
 });
-import dictSelect from '@/components/Dict/index.vue'
-import schoolSelect from "@/components/commonSelect/schoolSelect.vue";
-import rewardsAPI,{QueryParams} from "@/api/system/client/notice";
 import {formatApplyDate}  from '@/utils/datedisplay';
-import themeEdit from '@/views/order/rewards/edit.vue'
+import schoolSelect from "@/components/commonSelect/schoolSelect.vue";
+import carMoveCodesAPI from "@/api/system/client/carMoveCodes";
+import themeEdit from '@/views/client/carMoveCodes/edit.vue'
 import { PREURL,IMG_BASE_URL } from "@/utils/const";
 import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
@@ -196,17 +197,12 @@ const queryFormRef = ref(ElForm);
 const loading = ref(false);
 
 
-const queryParams:QueryParams = reactive({
+const queryParams: any = reactive({
   tenantId:1,
-  keywords:"",
   pageNum :1,
   pageSize :10,
-  userName:"",
-  identityType:"",
-  rewardStatus:'',
 });
 
-const datePicker = ref([])
 
 
 const tableList = ref([]); 
@@ -223,17 +219,12 @@ watch(
 // 修改查询函数，确保在查询时使用正确的分页参数
 function handleQuery() {
   loading.value = true;
-  let [ startTime = '', endTime = '' ] = datePicker.value;
   let params = {
     ...queryParams,
     pageNum: queryParams.pageNum,
     pageSize: queryParams.pageSize
   } 
-  startTime && (params.startTime = startTime);
-  endTime && (params.endTime = endTime);
-  console.log(params)
-  
-  rewardsAPI.getPage(params).then((data:any) => {
+  carMoveCodesAPI.getPage(params).then((data:any) => {
     tableList.value = data.list;
     total.value = data.total;
     loading.value = false;
@@ -243,7 +234,6 @@ handleQuery()
 
 // 重置查询时重置页码
 function handleResetQuery() {
-  datePicker.value = []; 
   queryFormRef.value.resetFields();
   queryParams.pageNum = 1; // 重置页码到第一页
   handleQuery();
@@ -255,12 +245,12 @@ const preData = ref({
   urls:[],
 }) 
 
-// // 预览图片
-// const handlePictureCardPreview = (uploadFile: UploadFile,urls) => {
-//   preData.value.urls = handleUrl(urls,false).map(i=>i.url)
-//   preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
-//   preData.value.showPre = true;
-// };
+// 预览图片
+const handlePictureCardPreview = (uploadFile: UploadFile,urls) => {
+  preData.value.urls = handleUrl(urls,false).map(i=>i.url)
+  preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
+  preData.value.showPre = true;
+};
 
 
 // 处理选中项变化
@@ -307,7 +297,7 @@ function handleDelete(id?: number) {
   }).then(
     () => {
       loading.value = true;
-      rewardsAPI.deleteByIds(ids)
+      carMoveCodesAPI.deleteByIds(ids)
         .then(() => {
           ElMessage.success("删除成功");
           handleResetQuery();
@@ -320,4 +310,26 @@ function handleDelete(id?: number) {
   );
 }
 
+const GenerateDialog = ref(false)
+const Generate = reactive({
+  number:'',
+  url:''
+})
+// 提交表单
+function handleSubmit() {
+  // formRef.value.validate((valid: any) => {
+  //   if (valid) {
+  //     const loading = ElLoading.service({
+  //       lock: true,
+  //       text: 'Loading',
+  //       background: 'rgba(0, 0, 0, 0.7)',
+  //     })  
+      carMoveCodesAPI.generated(Generate.number,Generate.url)
+        .then(() => {
+          ElMessage.success("操作成功");
+          handleResetQuery();
+        })
+        .finally(() => (GenerateDialog.value = false));
+} 
 </script>
+

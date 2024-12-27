@@ -200,7 +200,7 @@ function formatTimeFromArray(timeArray) {
     timeArray.push(0);
   }
   let [hours, minutes, seconds] = timeArray.map(num => String(num).padStart(2, '0'));
-  return `${hours}:${minutes}:${seconds}`;
+  return `${hours}:${minutes}`;
   }
 }
 </script>

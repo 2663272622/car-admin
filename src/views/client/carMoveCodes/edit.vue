@@ -7,51 +7,27 @@
       >
       <!-- :destroy-on-close="true" -->
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px" v-if="formKey">
-        <el-form-item label="选择学校" prop="tenantId"> 
-          <schoolSelect  v-model="formData.tenantId" class="!w-[100%]" ></schoolSelect>
-        </el-form-item> 
-        <el-form-item label="话题标题" prop="title">
-          <el-input v-model="formData.title" placeholder="请输入话题标题" />
+        <el-form-item label="车牌号" prop="carNumber">
+          <el-input v-model="formData.carNumber" placeholder="请输入车牌号" />
         </el-form-item>
-        <el-form-item label="话题内容" prop="content">
-          <el-input v-model="formData.content" type="textarea" placeholder="请输入话题内容" />
+        <el-form-item label="联系电话" prop="phoneNumber">
+          <el-input v-model="formData.phoneNumber" placeholder="请输入联系电话" />
         </el-form-item>
-        <el-form-item label="图片" prop="imagePath">
-          <schoolUpload parantPath="theme" v-model="formData.imagePath"></schoolUpload>
+        <el-form-item label="消息内容" prop="messageText">
+          <el-input v-model="formData.messageText" type="textarea" placeholder="请输入消息内容" />
         </el-form-item>
-        <el-form-item label="辅图" prop="ext1">
-          <schoolUpload parantPath="theme" v-model="formData.ext1" max="9"></schoolUpload>
-        </el-form-item> 
-        <el-form-item label="评论数量" prop="comment">
-          <el-input-number class="!w-full" v-model="formData.comment" :precision="0" :step="1" :min="0" />
+        <el-form-item label="联系备注" prop="contactRemark">
+          <el-input v-model="formData.contactRemark" type="textarea" placeholder="请输入联系您时的备注" />
         </el-form-item>
-        <!-- <el-form-item label="点赞数量" prop="likes">
-          <el-input-number class="!w-full" v-model="formData.likes" :precision="0" :step="1" :min="0" />
-        </el-form-item> -->
-        <el-form-item label="浏览量" prop="views">
-          <el-input-number class="!w-full" v-model="formData.views" :precision="0" :step="1" :min="0" />
-        </el-form-item>
-        <el-form-item label="热度" prop="heat">
-          <el-input-number class="!w-full" v-model="formData.heat" :precision="0" :step="1" :min="0" />
-        </el-form-item>
-        <!-- <el-form-item label="积分" prop="integral">
-          <el-input-number class="!w-full" v-model="formData.integral" :precision="0" :step="1" :min="0" />
-        </el-form-item> -->
-
-        <!-- <el-form-item label="显示排序" prop="sort">
-          <el-input-number
-            v-model="formData.sort"
-            controls-position="right"
-            style="width: 100px"
-            :min="0"
-          />
-        </el-form-item> -->
-        <!-- <el-form-item label="学校状态">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="true">正常</el-radio>
-            <el-radio :value="false">禁用</el-radio>
+        <el-form-item label="使用次数" prop="usageCount" v-if="props.type == 'info'">
+        <el-input-number class="!w-full" v-model="formData.usageCount" :precision="0" :step="1" :min="0" />
+      </el-form-item>
+        <el-form-item label="激活状态" prop="active" v-if="props.type == 'info'">
+          <el-radio-group v-model="formData.active">
+            <el-radio :value=1 label="已激活" >已激活</el-radio>
+            <el-radio :value=0 label="未激活" >未激活</el-radio>
           </el-radio-group>
-        </el-form-item> -->
+        </el-form-item>
       </el-form> 
       <template #footer >
         <div class="dialog-footer" v-if="props.type !== 'info'">
@@ -64,7 +40,7 @@
 
 <script lang="ts" setup>
 import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
-import SchoolThemeAPI from "@/api/system/school/theme";
+import carMoveCodesAPI from "@/api/system/client/carMoveCodes";
 import { ElLoading } from "element-plus";
 const props = defineProps({
   modelValue: {
@@ -106,16 +82,16 @@ watch(()=>modelValue.value,(newVal,oldVal)=>{
 
 const rules = reactive({
   // tenantId: [{ required: true, message: "学校不能为空", trigger: "change" }],
-  title: [{ required: true, message: "标题不能为空", trigger: "blur" }],
-  content: [{ required: true, message: "话题内容不能为空", trigger: "blur" }],
-  imagePath: [{ required: true, message: "图片不能为空", trigger: "blur" }],
+  // title: [{ required: true, message: "标题不能为空", trigger: "blur" }],
+  // content: [{ required: true, message: "话题内容不能为空", trigger: "blur" }],
+  // imagePath: [{ required: true, message: "图片不能为空", trigger: "blur" }],
 });
 
 const formKey = ref(-1)
 
 const getInfo = async() =>{
   if(!props.id) return;
-  const res = await SchoolThemeAPI.getFormData(props.id) 
+  const res = await carMoveCodesAPI.getFormData(props.id) 
   
   formData.value = res
   formKey.value = Math.random()
@@ -135,13 +111,13 @@ function handleSubmit() {
       
       if (props.type == 'add') {
         console.log(formData.value)
-        SchoolThemeAPI.add(formData.value).then((res) => {
+        carMoveCodesAPI.add(formData.value).then((res) => {
             ElMessage.success("操作成功");
             handleCloseDialog()
           })
           .finally(() => ( loading.close()));
       } else {
-        SchoolThemeAPI.update(props.id, formData.value)
+        carMoveCodesAPI.update(props.id, formData.value)
           .then(() => {
             ElMessage.success("操作成功"); 
             handleCloseDialog()

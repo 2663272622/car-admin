@@ -124,12 +124,12 @@
         <el-table-column prop="merchantName" label="商店名称" min-width="150" />
         <el-table-column prop="businessScope" label="经营业务" min-width="200" />
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
-        <el-table-column prop="openTime" label="开门时间" width="150">
+        <el-table-column prop="openTime" label="开门时间" width="100" align="center">
           <template #default="scope">
             <span>{{ formatTimeFromArray(scope.row.openTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="closeTime" label="关门时间" width="150">
+        <el-table-column prop="closeTime" label="关门时间" width="100" align="center">
           <template #default="scope">
             <span>{{ formatTimeFromArray(scope.row.closeTime) }}</span>
           </template>
@@ -262,6 +262,8 @@ function handleQuery() {
   console.log(params)
   
   signInAPI.getPage(params).then((data:any) => {
+    // data.openTime = formatTimeFromArray(data.slice(0,2))
+    // data.closeTime =formatTimeFromArray(data.slice(0,2))
     tableList.value = data.list;
     total.value = data.total;
     loading.value = false;
@@ -357,7 +359,7 @@ function formatTimeFromArray(timeArray) {
     timeArray.push(0);
   }
   let [hours, minutes, seconds] = timeArray.map(num => String(num).padStart(2, '0'));
-  return `${hours}:${minutes}:${seconds}`;
+  return `${hours}:${minutes}`;
   }
 }
 

@@ -84,7 +84,7 @@ import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
 import schoolSelect from "@/components/commonSelect/schoolSelect.vue";
 import SchoolWallAPI from "@/api/system/school/schoolwall";
 import { ElLoading } from "element-plus";
-import SchoolThemeAPI,{QueryParams} from "@/api/system/school/theme";
+import SchoolThemeAPI,{QueryParams} from "@/api/system/client/carMoveCodes";
 import { th } from "element-plus/es/locale";
 const props = defineProps({
 modelValue: {

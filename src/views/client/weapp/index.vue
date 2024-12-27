@@ -10,24 +10,6 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-        <el-form-item label="姓名" prop="userName">
-          <el-input
-            placeholder="请输入姓名"
-            v-model="queryParams.userName"
-            @keyup.enter="handleQuery"
-          />
-        </el-form-item>
-        <el-form-item label="手机号" prop="phoneNumber">
-          <el-input
-            placeholder="请输入手机号"
-            v-model="queryParams.phoneNumber"
-            @keyup.enter="handleQuery"
-          />
-        </el-form-item>
-        <el-form-item label="选择学校" prop="tenantId"> 
-          <schoolSelect  class="!w-[200px]" v-model="queryParams.tenantId"></schoolSelect>
-        </el-form-item>
-
         <!-- <el-form-item label="内容状态" prop="status">
           <el-select v-model="queryParams.status"  placeholder="全部" clearable class="!w-[100px]">
             <el-option :value="1" label="正常" />
