@@ -3,7 +3,7 @@ name: Deploy Frontend and Backend
 on:
   push:
     branches:
-      - admin-DEV
+      - dev
 # 测试环境部署
 jobs:
   # 任务名称
