@@ -315,7 +315,7 @@
           <icon-select v-model="formData.icon" />
         </el-form-item>
 
-        <el-form-item v-if="formData.type == MenuTypeEnum.CATALOG" label="跳转路由">
+        <el-form-item v-if="formData.type == MenuTypeEnum.CATALOG || formData.type == MenuTypeEnum.MENU" label="重定向路由">
           <el-input v-model="formData.redirect" placeholder="跳转路由" />
         </el-form-item>
       </el-form>
@@ -433,7 +433,7 @@ function handleOpenDialog(parentId?: number, menuId?: number) {
 
 // 菜单类型切换
 function handleMenuTypeChange() {
-  // 如果菜单类型改变
+  // 如果菜单类型改变 
   if (formData.value.type !== initialMenuFormData.value.type) {
     if (formData.value.type === MenuTypeEnum.MENU) {
       // 目录切换到菜单时，清空组件路径
