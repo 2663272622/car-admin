@@ -1,0 +1,44 @@
+name: Deploy Frontend and Backend
+# 触发脚本的条件，develop分支push代码的时候
+on:
+  push:
+    branches:
+      - dev
+# 测试环境部署
+jobs:
+  # 任务名称
+  deploy-dev-webischool:
+    # runs-on 指定job任务运行所需要的虚拟机环境（必填）
+    runs-on: ubuntu-latest
+    # 任务步骤
+    steps:
+      # 获取源码
+      - name: Fetch code
+        # 使用action库  actions/checkout获取源码
+        uses: actions/checkout@v4
+      # 安装node
+      - name: Install pnpm
+        run: npm install -g pnpm@9.1.1
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.7.3
+          cache: "pnpm"
+      # 安装依赖
+      - name: Install deps
+        run: pnpm i --no-frozen-lockfile
+      # 打包前端
+      - name: Build script
+        run: |
+          npm run build:test  # 执行打包命令
+      # 上传打包文件到远程服务器
+      - name: upload files to OSS
+        uses: fangbinwei/aliyun-oss-website-action@v1
+        with:
+          accessKeyId: ${{ secrets.ACCESS_KEY_ID }}
+          accessKeySecret: ${{ secrets.ACCESS_KEY_SECRET }}
+          bucket: icar-admindev
+          incremental: true
+          # use your own endpoint
+          endpoint: oss-cn-beijing.aliyuncs.com
+          folder: dist
