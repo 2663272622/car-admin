@@ -41,19 +41,19 @@
       <el-descriptions-item label="发布时间：">
         {{ notice.publishTime }}
       </el-descriptions-item>
-      <el-descriptions-item  label="公告内容：">
+      <el-descriptions-item v-if="notice.content.includes('theme')"  label="公告内容：">
         <div>
-            <el-upload
-              class="table-pre"
-              :file-list="handleUrl(notice.content)"
-              list-type="picture-card"
-              disabled
-              multiple
-              :on-preview="(uploadFile)=>handlePictureCardPreview(uploadFile,notice.content)"
-              /> 
+          <el-upload
+            class="table-pre"
+            :file-list="handleUrl(notice.content)"
+            list-type="picture-card"
+            disabled
+            multiple
+            :on-preview="(uploadFile)=>handlePictureCardPreview(uploadFile,notice.content)"
+            />  
         </div>
       </el-descriptions-item>
-      <el-descriptions-item  label="公告内容：">
+      <el-descriptions-item v-else label="公告内容：">
         <div v-html="notice.content"/>
       </el-descriptions-item>
     </el-descriptions>
@@ -74,7 +74,9 @@ import { handleUrl } from "@/utils";
 import { PREURL,IMG_BASE_URL } from "@/utils/const";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 const visible = ref(false);
-const notice = ref<NoticeDetailVO>({});
+const notice = ref<NoticeDetailVO>({
+  content: "",
+});
 const isFullscreen = ref(false); // 控制全屏状态
 
 // 切换全屏

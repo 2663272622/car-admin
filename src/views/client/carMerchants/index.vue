@@ -133,11 +133,9 @@
         </el-table-column> 
         <el-table-column prop="merchantName" label="商店名称" min-width="150" />
         <el-table-column label="营业类型" min-width="200" align="center" prop="businessScope">
-          <!-- <template #default="scope">
-            <div v-for="item in businessScope" :key="item">
-              <DictLabel v-model="item" code="item" />
-            </div>
-          </template> -->
+          <template #default="scope">
+              <DictLabel v-model="scope.row.businessScope" code="businessScope" />
+          </template>
         </el-table-column>
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
         <el-table-column prop="openTime" label="开门时间" width="100" align="center">
@@ -300,20 +298,15 @@ function handleQuery() {
   signInAPI.getPage(params).then((data:any) => {
     // data.openTime = formatTimeFromArray(data.slice(0,2))
     // data.closeTime =formatTimeFromArray(data.slice(0,2))
-    // data.list.map((item:any) => {
-    //   item.businessScope = item.businessScope.split(",")
-    // })
+    data.list.map((item:any) => {
+      item.businessScope = item.businessScope.split(",")
+    })
     tableList.value = data.list;
     total.value = data.total;
     loading.value = false;
   });
 }
 handleQuery()
-
-const businessScope=computed(()=>{
-  return tableList.value.map(item=>item.businessScope.split(","))
-})
-
 // 重置查询时重置页码
 function handleResetQuery() {
   datePicker.value = []; 

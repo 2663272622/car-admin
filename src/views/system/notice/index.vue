@@ -252,6 +252,7 @@ const dialog = reactive({
 const formData = reactive<NoticeForm>({
   level: "L", // 默认优先级为低
   targetType: 1, // 默认目标类型为全体
+  content: "",
 });
 
 // 通知公告表单校验规则
