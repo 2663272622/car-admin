@@ -41,16 +41,38 @@
       <el-descriptions-item label="发布时间：">
         {{ notice.publishTime }}
       </el-descriptions-item>
-      <el-descriptions-item label="公告内容：">
-        <div v-html="notice.content" />
+      <el-descriptions-item  label="公告内容：">
+        <div>
+            <el-upload
+              class="table-pre"
+              :file-list="handleUrl(notice.content)"
+              list-type="picture-card"
+              disabled
+              multiple
+              :on-preview="(uploadFile)=>handlePictureCardPreview(uploadFile,notice.content)"
+              /> 
+        </div>
+      </el-descriptions-item>
+      <el-descriptions-item  label="公告内容：">
+        <div v-html="notice.content"/>
       </el-descriptions-item>
     </el-descriptions>
   </el-dialog>
+
+  <el-image-viewer
+      v-if="preData.showPre"
+      :zoom-rate="1.2"
+      :initialIndex="preData.vIndex"
+      :url-list="preData.urls"
+      @close="preData.showPre = false"
+    /> 
 </template>
 
 <script setup lang="ts">
 import NoticeAPI, { NoticeDetailVO } from "@/api/system/notice";
-
+import { handleUrl } from "@/utils";
+import { PREURL,IMG_BASE_URL } from "@/utils/const";
+import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 const visible = ref(false);
 const notice = ref<NoticeDetailVO>({});
 const isFullscreen = ref(false); // 控制全屏状态
@@ -69,12 +91,25 @@ const handleClose = () => {
 const openNotice = async (id: string) => {
   visible.value = true;
   const noticeDetail = await NoticeAPI.getDetail(id);
+  noticeDetail.content =noticeDetail.content.slice(3,noticeDetail.content.length-4)
   notice.value = noticeDetail;
 };
 
 defineExpose({
   openNotice,
 });
+
+const preData = ref({
+  showPre:false,
+  vIndex:-1,
+  urls:[],
+}) 
+// 预览图片
+const handlePictureCardPreview = (uploadFile: UploadFile,urls) => {
+  preData.value.urls = handleUrl(urls,false).map(i=>i.url)
+  preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
+  preData.value.showPre = true;
+};
 </script>
 
 <style scoped></style>

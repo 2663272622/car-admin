@@ -8,14 +8,14 @@
       <!-- :destroy-on-close="true" -->
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px" v-if="formKey">
         <el-form-item label="图片" prop="storeLogoUrl">
-          <schoolUpload parantPath="theme" v-model="formData.storeLogoUrl"></schoolUpload>
+          <schoolUpload parantPath="theme" v-model="formData.storeLogoUrl" max="9"></schoolUpload>
         </el-form-item>
         <el-form-item label="商店名称" prop="merchantName"> 
           <el-input v-model="formData.merchantName" placeholder="请输入商店名称" />
         </el-form-item> 
-        <el-form-item label="经营业务" prop="businessScope"> 
-          <el-input v-model="formData.businessScope" placeholder="请输入经营业务" />
-        </el-form-item> 
+        <el-form-item label="经营业务" prop="businessScope" >
+          <dict-select v-model="formData.businessScope" type="checkbox" code="businessScope" class="!w-[100%]" placeholder="请选择经营业务"></dict-select>
+        </el-form-item>
         <el-form-item label="联系电话" prop="contactPhone"> 
           <el-input v-model="formData.contactPhone" placeholder="请输入联系电话" />
         </el-form-item> 
@@ -76,6 +76,7 @@
 </template>
 
 <script lang="ts" setup>
+import dictSelect from '@/components/Dict/index.vue'
 import signInAPI from "@/api/system/client/carMerchants";
 import { ElLoading } from "element-plus";
 import type { FormRules } from 'element-plus'
@@ -131,6 +132,7 @@ const getInfo = async() =>{
   const res = await signInAPI.getFormData(props.id) 
   res.openTime = formatTimeFromArray(res.openTime)
   res.closeTime = formatTimeFromArray(res.closeTime)
+  res.businessScope = res.businessScope.split(",")
   formData.value = res
   formKey.value = Math.random()
   console.log(res) 
@@ -146,7 +148,7 @@ function handleSubmit() {
         text: 'Loading',
         background: 'rgba(0, 0, 0, 0.7)',
       })  
-      
+      formData.value.businessScope = formData.value.businessScope.join(",")
       if (props.type == 'add') {
         console.log(formData.value)
         signInAPI.add(formData.value).then((res) => {

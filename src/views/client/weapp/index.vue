@@ -183,7 +183,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import WeAppAPI,{QueryParams} from "@/api/system/client/weapp";
+import WeAppAPI from "@/api/system/client/weapp";
 import {formatApplyDate}  from '@/utils/datedisplay';
 import themeEdit from '@/views/client/weapp/edit.vue'
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
@@ -192,14 +192,11 @@ const queryFormRef = ref(ElForm);
 const loading = ref(false);
 
 
-const queryParams:QueryParams = reactive({
+const queryParams:any = reactive({
   tenantId:1,
   keywords:"",
   pageNum :1,
   pageSize :10,
-  userName:"",
-  identityType:"",
-  phoneNumber:"",
 });
 
 const datePicker = ref([])

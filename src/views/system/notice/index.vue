@@ -177,7 +177,8 @@
           <el-input v-model="formData.title" placeholder="通知标题" clearable />
         </el-form-item>
         <el-form-item label="通知内容" prop="content">
-          <WangEditor v-model="formData.content" style="min-height: 480px; max-height: 500px" />
+          <WangEditor v-show="formData.type!=23"  v-model="formData.content" style="min-height: 480px; max-height: 500px" />
+          <schoolUpload v-if="formData.type==23" parantPath='theme' v-model='formData.content' max='9'></schoolUpload>
         </el-form-item>
         <el-form-item label="通知类型" prop="type">
           <Dict v-model="formData.type" code="notice_type" />
@@ -219,9 +220,10 @@ defineOptions({
   name: "Notice",
   inheritAttrs: false,
 });
-
+import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
 import NoticeAPI, { NoticePageVO, NoticeForm, NoticePageQuery } from "@/api/system/notice";
 import UserAPI from "@/api/system/user";
+import { c, s } from "vite/dist/node/types.d-aGj9QkWt";
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
@@ -408,6 +410,8 @@ function handleOpenNoticeDetailDialog(id: number) {
 onMounted(() => {
   handleQuery();
 });
+
+
 </script>
 <style>
 .editor-wrapper {

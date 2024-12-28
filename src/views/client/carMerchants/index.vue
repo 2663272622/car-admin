@@ -10,13 +10,28 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-        <!-- <el-form-item label="手机号" prop="phoneNumber">
+        <el-form-item label="商户名称" prop="merchantName">
           <el-input
-            v-model="queryParams.phoneNumber"
-            placeholder="手机号"
+            v-model="queryParams.merchantName"
+            placeholder="请输入商户名称"
             @keyup.enter="handleQuery"
           />
-        </el-form-item> -->
+        </el-form-item>
+        <el-form-item label="商户电话" prop="contactPhone">
+          <el-input
+            v-model="queryParams.contactPhone"
+            placeholder="请输入商户电话"
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="商户地址" prop="storeAddress">
+          <el-input
+            v-model="queryParams.storeAddress"
+            placeholder="请输入商户地址"
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+
         <!-- <el-form-item label="选择学校" prop="tenantId"> 
           <schoolSelect  class="!w-[200px]" v-model="queryParams.tenantId"></schoolSelect>
         </el-form-item> -->
@@ -104,25 +119,26 @@
             />
           </template>
         </el-table-column>  -->
-        <el-table-column prop="storeLogoUrl" label="商店图标" min-width="100">
+        <el-table-column prop="storeLogoUrl" label="商店图标" min-width="200">
           <template #default="scope">
-            <el-image
-              style="width: 50px; height: 50px;"
-              :src="`${IMG_BASE_URL + scope.row.storeLogoUrl + PREURL}`"
-              :zoom-rate="1.2"
-              :max-scale="7"
-              :min-scale="0.2"
-              :preview-src-list="[`${IMG_BASE_URL + scope.row.storeLogoUrl }`]"
-              :initial-index="4"
-              fit="cover"
-              :lazy="true"
-              :preview-teleported	="true"
-              :z-index="9999"
-            />
+            <el-upload
+              class="table-pre"
+              :file-list="handleUrl(scope.row.storeLogoUrl)"
+              list-type="picture-card"
+              disabled
+              multiple
+              :on-preview="(uploadFile)=>handlePictureCardPreview(uploadFile,scope.row.storeLogoUrl)"
+              /> 
           </template>
         </el-table-column> 
         <el-table-column prop="merchantName" label="商店名称" min-width="150" />
-        <el-table-column prop="businessScope" label="经营业务" min-width="200" />
+        <el-table-column label="营业类型" min-width="200" align="center" prop="businessScope">
+          <!-- <template #default="scope">
+            <div v-for="item in businessScope" :key="item">
+              <DictLabel v-model="item" code="item" />
+            </div>
+          </template> -->
+        </el-table-column>
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
         <el-table-column prop="openTime" label="开门时间" width="100" align="center">
           <template #default="scope">
@@ -134,6 +150,26 @@
             <span>{{ formatTimeFromArray(scope.row.closeTime) }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="userAvatar" label="用户头像" min-width="100">
+          <template #default="scope">
+            <el-image
+              style="width: 50px; height: 50px;border-radius: 50%;"
+              :src="scope.row.userAvatar"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[scope.row.userAvatar]"
+              :initial-index="4"
+              fit="cover"
+              :lazy="true"
+              :preview-teleported	="true"
+              :z-index="9999"
+            />
+          </template>
+        </el-table-column> 
+        <el-table-column prop="userName" label="用户姓名" min-width="150" />
+        <el-table-column prop="userPhone" label="用户电话" width="150"/>
+        <el-table-column prop="storeAddress" label="商户地址" min-width="150" />
         <el-table-column prop="latitude" label="经度" width="150" />
         <el-table-column prop="longitude" label="纬度" width="150" />
         <el-table-column prop="storeDescription" label="商店描述" width="200" />
@@ -223,7 +259,7 @@ import { PREURL,IMG_BASE_URL } from "@/utils/const";
 import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
-
+import {ref,computed} from "vue";
 const queryFormRef = ref(ElForm);
 const loading = ref(false);
 
@@ -264,12 +300,19 @@ function handleQuery() {
   signInAPI.getPage(params).then((data:any) => {
     // data.openTime = formatTimeFromArray(data.slice(0,2))
     // data.closeTime =formatTimeFromArray(data.slice(0,2))
+    // data.list.map((item:any) => {
+    //   item.businessScope = item.businessScope.split(",")
+    // })
     tableList.value = data.list;
     total.value = data.total;
     loading.value = false;
   });
 }
 handleQuery()
+
+const businessScope=computed(()=>{
+  return tableList.value.map(item=>item.businessScope.split(","))
+})
 
 // 重置查询时重置页码
 function handleResetQuery() {
