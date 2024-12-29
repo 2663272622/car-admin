@@ -44,7 +44,23 @@
             </el-tag>
           </template>
         </el-table-column>
-
+          <el-table-column prop="image" label="图片" width="100">
+            <template #default="scope">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="`${IMG_BASE_URL + scope.row.image + PREURL}`"
+                :zoom-rate="1.2"
+                :max-scale="7"
+                :min-scale="0.2"
+                :preview-src-list="[`${IMG_BASE_URL + scope.row.image }`]"
+                :initial-index="4"
+                fit="cover"
+                :lazy="true"
+                :preview-teleported	="true"
+                :z-index="9999"
+              />
+            </template>
+          </el-table-column> 
         <el-table-column fixed="right" label="操作" align="center" width="220">
           <template #default="scope">
             <el-button
@@ -115,6 +131,9 @@
               <el-radio value="" border size="small">清空</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item label="图片">
+            <schoolUpload v-model="formData.image" :special="true"></schoolUpload>
+          </el-form-item>
         </el-card>
       </el-form>
 
@@ -129,6 +148,8 @@
 </template>
 
 <script setup lang="ts">
+import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
+import { PREURL,IMG_BASE_URL } from "@/utils/const";
 defineOptions({
   name: "DictData",
   inherititems: false,

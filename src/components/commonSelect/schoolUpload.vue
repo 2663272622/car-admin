@@ -47,6 +47,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  special:{
+    type:Boolean,
+    default:false
+  },
 }); 
 
 
@@ -70,8 +74,10 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
 }
 // 上传
 const beforeUpload = (rawFile) => {
-  
-  let name = new Date().getTime()+'_'+rawFile.name
+  let name = rawFile.name
+  if(!props.special){
+    name = new Date().getTime()+'_'+rawFile.name
+  }
 
   let relativePath = props.parantPath+'/'+name
 

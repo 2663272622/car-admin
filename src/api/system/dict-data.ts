@@ -159,4 +159,9 @@ export interface DictDataForm {
    * 标签类型
    */
   tagType?: "success" | "warning" | "info" | "primary" | "danger" | undefined;
+
+  /**
+   * 图片
+   */
+  image?: string;
 }

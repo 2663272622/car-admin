@@ -176,12 +176,18 @@
         <el-form-item label="通知标题" prop="title">
           <el-input v-model="formData.title" placeholder="通知标题" clearable />
         </el-form-item>
-        <el-form-item label="通知内容" prop="content">
-          <WangEditor v-show="formData.type!=23"  v-model="formData.content" style="min-height: 480px; max-height: 500px" />
-          <schoolUpload v-if="formData.type==23" parantPath='theme' v-model='formData.content' max='9'></schoolUpload>
-        </el-form-item>
+        <template v-if="formData.type != 23">
+          <el-form-item label="通知内容" prop="content" >
+            <WangEditor v-model="formData.content" style="min-height: 480px; max-height: 500px" />
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-form-item label="通知内容" prop="content"  >
+            <schoolUpload parantPath='theme' v-model='formData.content' max='9'></schoolUpload>
+          </el-form-item>
+        </template>
         <el-form-item label="通知类型" prop="type">
-          <Dict v-model="formData.type" code="notice_type" />
+          <Dict v-model="formData.type" code="notice_type" @change="handleContentChange"/>
         </el-form-item>
         <el-form-item label="通知等级" prop="level">
           <Dict v-model="formData.level" code="notice_level" />
@@ -412,6 +418,11 @@ onMounted(() => {
   handleQuery();
 });
 
+function handleContentChange() {
+  console.log("我被出发啦",formData)
+  formData.content = ''
+  console.log("12312",formData)
+}
 
 </script>
 <style>
