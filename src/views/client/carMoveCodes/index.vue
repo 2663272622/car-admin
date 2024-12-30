@@ -159,13 +159,24 @@
       width="600px"
       v-model="GenerateDialog"
       title="批量生成挪车码"
+      @close="resetQuery"
       >
       <el-form ref="formRef" :model="Generate" label-width="100px">
-        <el-form-item label="生成数量" prop="number">
-          <el-input v-model="Generate.number" placeholder="请输入生成数量" />
+        <el-form-item label="选择商家" prop="carMerchantId">
+          <el-select
+            v-model="Generate.carMerchantId"
+            placeholder="请选择商家"
+          >
+            <el-option
+              v-for="item in list"
+              :key="item.userId"
+              :label="item.merchantName"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="上传url" prop="url">
-          <el-input v-model="Generate.url" placeholder="请输入上传url" />
+        <el-form-item label="生成数量" prop="number">
+          <el-input v-model="Generate.number" type="number" placeholder="请输入生成数量" />
         </el-form-item>
       </el-form>
       <template #footer >
@@ -192,6 +203,8 @@ import { PREURL,IMG_BASE_URL } from "@/utils/const";
 import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
+import carMerchantsAPI from "@/api/system/client/carMerchants";
+
 
 const queryFormRef = ref(ElForm);
 const loading = ref(false);
@@ -244,15 +257,6 @@ const preData = ref({
   vIndex:-1,
   urls:[],
 }) 
-
-// 预览图片
-const handlePictureCardPreview = (uploadFile: UploadFile,urls) => {
-  preData.value.urls = handleUrl(urls,false).map(i=>i.url)
-  preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
-  preData.value.showPre = true;
-};
-
-
 // 处理选中项变化
 const selectIds = ref<number[]>([]);
 function handleSelectionChange(selection: any) {
@@ -311,10 +315,15 @@ function handleDelete(id?: number) {
 }
 
 const GenerateDialog = ref(false)
-const Generate = reactive({
-  number:'',
-  url:''
+const Generate:Generator = reactive({
+  number:0,
 })
+
+interface Generator {
+  number:number,
+  carMerchantId?:number,
+}
+
 // 提交表单
 function handleSubmit() {
   // formRef.value.validate((valid: any) => {
@@ -324,12 +333,29 @@ function handleSubmit() {
   //       text: 'Loading',
   //       background: 'rgba(0, 0, 0, 0.7)',
   //     })  
-      carMoveCodesAPI.generated(Generate.number,Generate.url)
+      carMoveCodesAPI.generated(Generate.number,Generate.carMerchantId)
         .then(() => {
           ElMessage.success("操作成功");
           handleResetQuery();
         })
         .finally(() => (GenerateDialog.value = false));
 } 
+
+// 发送请求获取商家id
+const params = {
+  pageNum: 1,
+  pageSize: 1000,
+}
+const list = ref([])
+carMerchantsAPI.getPage(params).then((data:any) => {
+    list.value = data.list;
+    console.log(list.value)
+  });
+
+function resetQuery(){
+  Generate.number = 0;
+  Generate.carMerchantId = undefined;
+  handleQuery();
+}
 </script>
 

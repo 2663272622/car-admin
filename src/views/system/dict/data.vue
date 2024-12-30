@@ -44,6 +44,7 @@
             </el-tag>
           </template>
         </el-table-column>
+        <template v-if="img">
           <el-table-column prop="image" label="图片" width="100">
             <template #default="scope">
               <el-image
@@ -61,6 +62,7 @@
               />
             </template>
           </el-table-column> 
+        </template>
         <el-table-column fixed="right" label="操作" align="center" width="220">
           <template #default="scope">
             <el-button
@@ -160,6 +162,7 @@ import DictDataAPI, {
   DictDataPageVO,
   DictDataForm,
 } from "@/api/system/dict-data";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 const route = useRoute();
 
@@ -204,6 +207,8 @@ const computedRules = computed(() => {
   return rules;
 });
 
+//定义img变量来判断字典是否存在图片值
+const img=ref<boolean>();
 // 查询
 function handleQuery() {
   loading.value = true;
@@ -211,6 +216,11 @@ function handleQuery() {
     .then((data) => {
       tableData.value = data.list;
       total.value = data.total;
+      if(data.list[0].dictCode==='businessScope'){
+        img.value=true;
+      }else{
+        img.value=false;
+      }
     })
     .finally(() => {
       loading.value = false;

@@ -171,6 +171,9 @@
         <el-table-column prop="latitude" label="经度" width="150" />
         <el-table-column prop="longitude" label="纬度" width="150" />
         <el-table-column prop="storeDescription" label="商店描述" width="200" />
+        <el-table-column prop="heat" label="热度" width="60" align="center" />
+        <el-table-column prop="bought" label="购买总数" width="100" align="center" />
+        <el-table-column prop="boughtHistory" label="购买历史" width="200" />
         <el-table-column prop="createDate" label="创建日期" width="180">
           <template #default="scope">
             <span>{{ formatApplyDate(scope.row.createDate) }}</span>
@@ -250,7 +253,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import signInAPI from "@/api/system/client/carMerchants";
+import carMerchantsAPI from "@/api/system/client/carMerchants";
 import {formatApplyDate}  from '@/utils/datedisplay';
 import themeEdit from '@/views/client/carMerchants/edit.vue'
 import { PREURL,IMG_BASE_URL } from "@/utils/const";
@@ -295,9 +298,7 @@ function handleQuery() {
   endTime && (params.endTime = endTime);
   console.log(params)
   
-  signInAPI.getPage(params).then((data:any) => {
-    // data.openTime = formatTimeFromArray(data.slice(0,2))
-    // data.closeTime =formatTimeFromArray(data.slice(0,2))
+  carMerchantsAPI.getPage(params).then((data:any) => {
     data.list.map((item:any) => {
       item.businessScope = item.businessScope.split(",")
     })
@@ -373,7 +374,7 @@ function handleDelete(id?: number) {
   }).then(
     () => {
       loading.value = true;
-      signInAPI.deleteByIds(ids)
+      carMerchantsAPI.deleteByIds(ids)
         .then(() => {
           ElMessage.success("删除成功");
           handleResetQuery();

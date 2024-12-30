@@ -46,15 +46,24 @@ const carMoveCodesAPI = {
     });
   },
   //批量生成
-  generated(num: number,url:string){
+  generated(num: number,carMerchantId:number){
     return request({
       url: `${carMoveCodes_BASE_URL}/batchGenerate`,
       method: "post",
       params: {
         num: num,
-        url: url
+        carMerchantId:carMerchantId
       }
     });
+  },
+  download(ids: number){
+    return request({
+      url: `${carMoveCodes_BASE_URL}/download`,
+      method:'post',
+      params:{
+        ids:ids
+      }
+    })
   }
  
 };

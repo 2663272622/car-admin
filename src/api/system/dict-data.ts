@@ -124,6 +124,10 @@ export interface DictDataPageVO {
    * 字典排序
    */
   sort?: number;
+  /**
+   * 图片
+   */
+  image?: string;
 }
 
 /**

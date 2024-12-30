@@ -39,6 +39,9 @@
             end="24:00"
           />
         </el-form-item> 
+        <el-form-item label="热度" prop="heat">
+        <el-input-number class="!w-full" v-model="formData.heat" :precision="0" :step="1" :min="0" />
+      </el-form-item>
         <!-- <el-form-item label="身份类型" prop="identityType">
           <el-select v-model="formData.identityType" placeholder="请选择身份类型">
             <el-option :value="1" label="学生" />
