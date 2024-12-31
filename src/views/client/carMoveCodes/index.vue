@@ -53,6 +53,14 @@
         >
           删除
         </el-button>
+        <el-button
+          type="success"
+          :disabled="selectIds.length === 0"
+          icon="download"
+          @click="handleDownload()"
+        >
+          批量下载
+        </el-button>
       </div>
       <el-table
         v-loading="loading"
@@ -98,7 +106,7 @@
         </el-table-column>
 
 
-        <el-table-column label="操作" fixed="right" align="left" width="200">
+        <el-table-column label="操作" fixed="right" align="left" width="250">
           <template #default="scope"> 
             <el-button
               type="primary"
@@ -128,6 +136,15 @@
               @click.stop="handleDelete(scope.row.id)"
             >
               删除
+            </el-button>
+            <el-button
+              type="primary"
+              link
+              size="small"
+              icon="download"
+              @click.stop="handleDownload(scope.row.id)"
+            >
+              下载
             </el-button>
           </template>
         </el-table-column>
@@ -356,6 +373,22 @@ function resetQuery(){
   Generate.number = 0;
   Generate.carMerchantId = undefined;
   handleQuery();
+}
+
+// 下载挪车码
+function handleDownload(id?:string){
+  const ids = [id || selectIds.value].join(",");
+  carMoveCodesAPI.download(ids).then((res: any) => {
+    let blob = new Blob([res.data], { type: 'application/zip' });
+    const url= window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = url;
+    link.setAttribute('download', '挪车码.zip');
+    document.body.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+  });
 }
 </script>
 

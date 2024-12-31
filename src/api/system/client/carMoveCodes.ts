@@ -56,10 +56,11 @@ const carMoveCodesAPI = {
       }
     });
   },
-  download(ids: number){
+  download(ids: string){
     return request({
       url: `${carMoveCodes_BASE_URL}/download`,
       method:'post',
+      responseType: 'blob',
       params:{
         ids:ids
       }

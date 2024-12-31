@@ -123,9 +123,13 @@ watch(()=>modelValue.value,(newVal,oldVal)=>{
 },{immediate:true})
 
 const rules = reactive<FormRules>({
-  // tenantId: [{ required: true, message: "学校不能为空", trigger: "change" }],
-  // createBy: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
-  // invitedCode: [{ required: true, message: "邀请码不能为空", trigger: "blur" }],
+  // storeLogoUrl: [{ required: true, message: "图片不能为空", trigger: "change" }],
+  storeLogoUrl: [{ required: true, message: "图片不能为空", trigger: "blur" }],
+  merchantName: [{ required: true, message: "商店名称不能为空", trigger: "blur" }],
+  businessScope: [{ required: true, message: "营业类型不能为空", trigger: "blur" }],
+  openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
+  closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
+  contactPhone: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" }],
 });
 
 const formKey = ref(-1)
