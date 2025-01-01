@@ -279,6 +279,7 @@ const rules = reactive({
     },
   ],
   type: [{ required: true, message: "请选择通知类型", trigger: "change" }],
+  targetType: [{ required: true, message: "请选择通知目标类型", trigger: "change" }],
 });
 
 // 查询通知公告
@@ -419,9 +420,7 @@ onMounted(() => {
 });
 
 function handleContentChange() {
-  console.log("我被出发啦",formData)
   formData.content = ''
-  console.log("12312",formData)
 }
 
 </script>

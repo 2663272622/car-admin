@@ -2,7 +2,7 @@
     <el-dialog
       v-model="modelValue"
       :title="props.title"
-      width="600px"
+      width="800px"
       @closed="handleCloseDialog"
       >
       <!-- :destroy-on-close="true" -->
@@ -39,36 +39,25 @@
             end="24:00"
           />
         </el-form-item> 
+        <el-form-item label="用户ID" prop="userId"> 
+          <el-input-number v-model="formData.userId"  class="!w-full" placeholder="请输入用户ID" />
+        </el-form-item> 
+        <el-form-item label="地址" prop="storeAddress"> 
+          <el-input v-model="formData.storeAddress" placeholder="请输入地址" />
+        </el-form-item> 
+        <el-form-item label="商店介绍" prop="storeDescription"> 
+          <el-input v-model="formData.storeDescription" placeholder="请输入商店介绍" />
+        </el-form-item> 
+        <el-form-item label="购买总数" prop="bought" v-if="props.type === 'info'">
+          <el-input-number class="!w-full" v-model="formData.bought" :precision="0" :step="1" :min="0" />
+        </el-form-item>
+        <el-form-item label="购买历史" prop="boughtHistory" v-if="props.type === 'info'">
+          <el-input class="!w-full" v-model="formData.boughtHistory" :precision="0" :step="1" :min="0" />
+        </el-form-item>
         <el-form-item label="热度" prop="heat">
         <el-input-number class="!w-full" v-model="formData.heat" :precision="0" :step="1" :min="0" />
       </el-form-item>
-        <!-- <el-form-item label="身份类型" prop="identityType">
-          <el-select v-model="formData.identityType" placeholder="请选择身份类型">
-            <el-option :value="1" label="学生" />
-            <el-option :value="2" label="配送员" />
-          </el-select>
-        </el-form-item> -->
-        <!-- <el-form-item label="手机号" prop="phoneNumber">
-          <el-input v-model="formData.phoneNumber"  placeholder="请输入手机号" />
-        </el-form-item> -->
-        <!-- <el-form-item label="邀请码" prop="invitedCode">
-          <el-input v-model="formData.invitedCode"  placeholder="请输入邀请码" />
-        </el-form-item>  -->
-        <!-- <el-form-item label="显示排序" prop="sort">
-          <el-input-number
-            v-model="formData.sort"
-            controls-position="right"
-            style="width: 100px"
-            :min="0"
-          />
-        </el-form-item> -->
-        <!-- <el-form-item label="学校状态">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="true">正常</el-radio>
-            <el-radio :value="false">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item> -->
-      </el-form> 
+      </el-form>
       <template #footer >
         <div class="dialog-footer" v-if="props.type !== 'info'">
           <el-button type="primary" @click="handleSubmit">确 定</el-button>
@@ -123,13 +112,15 @@ watch(()=>modelValue.value,(newVal,oldVal)=>{
 },{immediate:true})
 
 const rules = reactive<FormRules>({
-  // storeLogoUrl: [{ required: true, message: "图片不能为空", trigger: "change" }],
-  storeLogoUrl: [{ required: true, message: "图片不能为空", trigger: "blur" }],
+  // storeLogoUrl: [{ required: true, message: "图片不能为空", trigger: "blur" }],
   merchantName: [{ required: true, message: "商店名称不能为空", trigger: "blur" }],
-  businessScope: [{ required: true, message: "营业类型不能为空", trigger: "blur" }],
-  openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
-  closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
-  contactPhone: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" }],
+  // businessScope: [{ required: true, message: "营业类型不能为空", trigger: "blur" }],
+  userId: [{ required: true, message: "用户ID不能为空", trigger: "blur" }],
+  storeAddress: [{ required: true, message: "地址不能为空", trigger: "blur" }],
+  // openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
+  // closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
+  contactPhone: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" },
+                { required: true, message: "联系电话不能为空", trigger: "blur" }],
 });
 
 const formKey = ref(-1)
@@ -196,7 +187,22 @@ const initForm = () => {
     content:'',
     tenantId:'',
     imagePath:"",
-    createBy:"",
+    businessScope:[],
+    contactPhone:"",
+    storeAddress:"",
+    storeDescription:"",
+    storeLogoUrl:"",
+    openTime:"",
+    closeTime:"",
+    bought:0,
+    boughtHistory:0,
+    heat:0,
+    merchantName:"",
+    userId:0,
+    id:0,
+    type:1,
+    sort:0,
+    remark:""
   }
 }
 

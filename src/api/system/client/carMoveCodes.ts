@@ -59,7 +59,7 @@ const carMoveCodesAPI = {
   download(ids: string){
     return request({
       url: `${carMoveCodes_BASE_URL}/download`,
-      method:'post',
+      method:'get',
       responseType: 'blob',
       params:{
         ids:ids

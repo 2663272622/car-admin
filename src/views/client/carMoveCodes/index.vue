@@ -3,20 +3,13 @@
   <div class="app-container">
     <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="话题" prop="title">
+        <el-form-item label="关键字" prop="keywords">
           <el-input
-            v-model="queryParams.title"
-            placeholder="请输入话题"
+            v-model="queryParams.keywords"
+            placeholder="请输入手机号/车牌号"
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-
-        <el-form-item label="内容状态" prop="status">
-          <el-select v-model="queryParams.status"  placeholder="全部" clearable class="!w-[100px]">
-            <el-option :value="1" label="正常" />
-            <el-option :value="0" label="禁用" />
-          </el-select>
-        </el-form-item> 
         
         <el-form-item>
           <el-button class="filter-item" type="primary" icon="search" @click="handleQuery">
@@ -88,14 +81,15 @@
             />
           </template>
         </el-table-column>  -->
+        <el-table-column prop="id" label="ID" width="100" />
         <el-table-column prop="carNumber" label="车牌号" width="120" />
         <el-table-column prop="phoneNumber" label="联系电话" width="150" />
         <el-table-column prop="messageText" label="消息内容" min-width="200" />
         <el-table-column prop="contactRemark" label="联系人备注" min-width="200" />
         <el-table-column prop="active" label="是否激活" width="80">
           <template #default="scope">
-            <el-tag v-if="scope.row.active === 1" type="success">激活</el-tag>
-            <el-tag v-else-if="scope.row.active === 0" type="danger">未激活</el-tag>
+            <el-tag v-if="scope.row.active === true" type="success">激活</el-tag>
+            <el-tag v-else-if="scope.row.active === false||scope.row.active === null" type="danger">未激活</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="usageCount" label="使用次数" width="100" align="center" />
@@ -193,7 +187,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="生成数量" prop="number">
-          <el-input v-model="Generate.number" type="number" placeholder="请输入生成数量" />
+          <el-input-number v-model="Generate.number" type="number" placeholder="请输入生成数量"  class="!w-full"/>
         </el-form-item>
       </el-form>
       <template #footer >
@@ -213,14 +207,11 @@ defineOptions({
   inheritAttrs: false,
 });
 import {formatApplyDate}  from '@/utils/datedisplay';
-import schoolSelect from "@/components/commonSelect/schoolSelect.vue";
 import carMoveCodesAPI from "@/api/system/client/carMoveCodes";
 import themeEdit from '@/views/client/carMoveCodes/edit.vue'
-import { PREURL,IMG_BASE_URL } from "@/utils/const";
-import { handleUrl } from "@/utils";
-import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
 import carMerchantsAPI from "@/api/system/client/carMerchants";
+import { ElLoading } from "element-plus";
 
 
 const queryFormRef = ref(ElForm);
@@ -343,19 +334,17 @@ interface Generator {
 
 // 提交表单
 function handleSubmit() {
-  // formRef.value.validate((valid: any) => {
-  //   if (valid) {
-  //     const loading = ElLoading.service({
-  //       lock: true,
-  //       text: 'Loading',
-  //       background: 'rgba(0, 0, 0, 0.7)',
-  //     })  
+      const loading = ElLoading.service({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })  
       carMoveCodesAPI.generated(Generate.number,Generate.carMerchantId)
         .then(() => {
           ElMessage.success("操作成功");
           handleResetQuery();
         })
-        .finally(() => (GenerateDialog.value = false));
+        .finally(() => (GenerateDialog.value = false,loading.close()));
 } 
 
 // 发送请求获取商家id

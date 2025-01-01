@@ -93,7 +93,6 @@ const handleClose = () => {
 const openNotice = async (id: string) => {
   visible.value = true;
   const noticeDetail = await NoticeAPI.getDetail(id);
-  noticeDetail.content =noticeDetail.content.slice(3,noticeDetail.content.length-4)
   notice.value = noticeDetail;
 };
 

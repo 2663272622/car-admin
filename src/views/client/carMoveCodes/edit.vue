@@ -7,6 +7,9 @@
       >
       <!-- :destroy-on-close="true" -->
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px" v-if="formKey">
+        <el-form-item label="ID" prop="id" v-if="props.type == 'info'">
+          <el-input v-model="formData.id" />
+        </el-form-item>
         <el-form-item label="车牌号" prop="carNumber">
           <el-input v-model="formData.carNumber" placeholder="请输入车牌号" />
         </el-form-item>
@@ -24,8 +27,8 @@
       </el-form-item>
         <el-form-item label="激活状态" prop="active" v-if="props.type == 'info'">
           <el-radio-group v-model="formData.active">
-            <el-radio :value=1 label="已激活" >已激活</el-radio>
-            <el-radio :value=0 label="未激活" >未激活</el-radio>
+            <el-radio :value="true" label="已激活" >已激活</el-radio>
+            <el-radio :value="false" label="未激活" >未激活</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form> 
@@ -85,6 +88,7 @@ const rules = reactive({
   // title: [{ required: true, message: "标题不能为空", trigger: "blur" }],
   // content: [{ required: true, message: "话题内容不能为空", trigger: "blur" }],
   // imagePath: [{ required: true, message: "图片不能为空", trigger: "blur" }],
+  // phoneNumber: { pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" },
 });
 
 const formKey = ref(-1)

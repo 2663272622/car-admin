@@ -5,7 +5,7 @@
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="关键字" prop="keywords">
           <el-input
-            placeholder="请输入用户名//手机号"
+            placeholder="请输入用户名/手机号"
             v-model="queryParams.keywords"
             @keyup.enter="handleQuery"
           />
@@ -104,7 +104,6 @@
         <el-table-column prop="wxId" label="微信ID" min-width="200" />
         <el-table-column prop="myInvitationCode" label="我的邀请码" width="150" align="center" />
         <el-table-column prop="invitedCode" label="受邀码" width="150"  align="center"/>
-        <el-table-column prop="cardBought" label="卡片已购买" width="100"  align="center" />
         <el-table-column prop="createDate" label="创建日期" width="180" align="center">
           <template #default="scope">
             <span>{{ formatApplyDate(scope.row.createDate) }}</span>

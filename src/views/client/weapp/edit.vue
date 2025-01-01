@@ -6,12 +6,15 @@
       @closed="handleCloseDialog"
       >
       <!-- :destroy-on-close="true" -->
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px" v-if="formKey">
+      <el-form ref="formRef" :model="formData" :rules="rules" label-width="90px" v-if="formKey">
         <el-form-item label="用户名" prop="userName"> 
           <el-input v-model="formData.userName" placeholder="请输入用户名" />
         </el-form-item> 
         <el-form-item label="密码" prop="password">
           <el-input v-model="formData.password" placeholder="请输入密码" />
+        </el-form-item>
+        <el-form-item label="openid" prop="openId">
+          <el-input v-model="formData.openId" placeholder="请输入openid" />
         </el-form-item>
         <el-form-item label="身份类型" prop="identityType">
           <el-select v-model="formData.identityType" placeholder="请选择身份类型">
@@ -22,9 +25,13 @@
         <el-form-item label="手机号" prop="phoneNumber">
           <el-input v-model="formData.phoneNumber"  placeholder="请输入手机号"  type="number"/>
         </el-form-item>
-        <el-form-item label="邀请码" prop="invitedCode">
-          <el-input v-model="formData.invitedCode"  placeholder="请输入邀请码" :disabled="true" />
+        <el-form-item label="邀请码" prop="invitedCode" v-if="props.type === 'add' || props.type === 'info'">
+          <el-input v-model="formData.invitedCode"  placeholder="请输入邀请码"/>
         </el-form-item> 
+        <el-form-item label="我的邀请码" prop="myInvitationCode" v-if="props.type === 'info'">
+          <el-input v-model="formData.myInvitationCode"/>
+        </el-form-item> 
+        
         <!-- <el-form-item label="显示排序" prop="sort">
           <el-input-number
             v-model="formData.sort"
@@ -53,6 +60,7 @@
 import WeAppAPI from "@/api/system/client/weapp";
 import { ElLoading } from "element-plus";
 import type { FormRules } from 'element-plus'
+import { el } from "element-plus/es/locale";
 
 const props = defineProps({
   modelValue: {
@@ -95,12 +103,15 @@ watch(()=>modelValue.value,(newVal,oldVal)=>{
 const rules = reactive<FormRules>({
   // tenantId: [{ required: true, message: "学校不能为空", trigger: "change" }],
   userName: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
-  password: [
-    { required: true, message: "密码不能为空", trigger: "blur" },
-    { min: 6, message: "密码长度不能小于6位", trigger: "blur" }
-  ],
+  // password: [
+  //   { required: true, message: "密码不能为空", trigger: "blur" },
+  //   { min: 6, message: "密码长度不能小于6位", trigger: "blur" }
+  // ],
   identityType: [{ required: true, message: "身份类型不能为空", trigger: "blur" }],
-  phoneNumber: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" }],
+  openId: [{ required: true, message: "openid不能为空", trigger: "blur" }],
+  phoneNumber: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" },
+    { required: true, message: "手机号不能为空", trigger: "blur" }
+  ],
   // invitedCode: [{ required: true, message: "邀请码不能为空", trigger: "blur" }],
 });
 
