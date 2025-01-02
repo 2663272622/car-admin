@@ -57,6 +57,12 @@
         <el-form-item label="热度" prop="heat">
         <el-input-number class="!w-full" v-model="formData.heat" :precision="0" :step="1" :min="0" />
       </el-form-item>
+      <el-form-item label="激活状态" prop="active" v-if="props.type == 'info'||props.type == 'edit'">
+          <el-radio-group v-model="formData.active">
+            <el-radio :value="true" label="已激活" >已激活</el-radio>
+            <el-radio :value="false" label="未激活" >未激活</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
       <template #footer >
         <div class="dialog-footer" v-if="props.type !== 'info'">
@@ -73,6 +79,7 @@ import signInAPI from "@/api/system/client/carMerchants";
 import { ElLoading } from "element-plus";
 import type { FormRules } from 'element-plus'
 import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
+import { fa, tr } from 'element-plus/es/locale';
 const props = defineProps({
   modelValue: {
     type: Boolean, 
@@ -146,7 +153,7 @@ function handleSubmit() {
         text: 'Loading',
         background: 'rgba(0, 0, 0, 0.7)',
       })  
-      formData.value.businessScope = formData.value.businessScope.join(",")
+      formData.value.businessScope = formData.value?.businessScope?.join(",")
       if (props.type == 'add') {
         console.log(formData.value)
         signInAPI.add(formData.value).then((res) => {
@@ -202,7 +209,8 @@ const initForm = () => {
     id:0,
     type:1,
     sort:0,
-    remark:""
+    remark:"",
+    active:false,
   }
 }
 

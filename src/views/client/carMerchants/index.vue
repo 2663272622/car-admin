@@ -33,8 +33,8 @@
         </el-form-item>
         <el-form-item label="商家状态" prop="active">
           <el-select v-model="queryParams.active"  placeholder="全部" clearable class="!w-[100px]">
-            <el-option :value="true" label="已激活" />
-            <el-option :value="false" label="未激活" />
+            <el-option :value=true label="已激活" />
+            <el-option :value=false label="未激活" />
           </el-select>
         </el-form-item> 
         <el-form-item label="查询时间范围" prop="createTime"> 
@@ -143,6 +143,12 @@
         <el-table-column prop="heat" label="热度" width="60" align="center" />
         <el-table-column prop="bought" label="购买总数" width="100" align="center" />
         <el-table-column prop="boughtHistory" label="购买历史" width="200" />
+        <el-table-column prop="active" label="是否激活" width="80">
+          <template #default="scope">
+            <el-tag v-if="scope.row.active === true" type="success">激活</el-tag>
+            <el-tag v-else-if="scope.row.active === false||scope.row.active === null" type="danger">未激活</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="createDate" label="创建日期" width="180">
           <template #default="scope">
             <span>{{ formatApplyDate(scope.row.createDate) }}</span>
@@ -230,7 +236,6 @@ import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
 import {ref,computed} from "vue";
-import { table } from "console";
 const queryFormRef = ref(ElForm);
 const loading = ref(false);
 
@@ -273,6 +278,11 @@ function handleQuery() {
   endTime && (params.endTime = endTime);
   console.log(params)
   carMerchantsAPI.getPage(params).then((data:any) => {
+    data.list.map((item:any) =>{
+      if(item.businessScope){
+        item.businessScope=item.businessScope.split(',')
+      } 
+    })
     tableList.value = data.list;
     console.log(tableList.value)
     total.value = data.total;
@@ -285,6 +295,7 @@ function handleResetQuery() {
   datePicker.value = []; 
   queryFormRef.value.resetFields();
   queryParams.pageNum = 1; // 重置页码到第一页
+  queryParams.keywords = ""; // 重置关键字
   handleQuery();
 }
 
