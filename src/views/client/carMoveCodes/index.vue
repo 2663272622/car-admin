@@ -219,7 +219,6 @@ const loading = ref(false);
 
 
 const queryParams: any = reactive({
-  tenantId:1,
   pageNum :1,
   pageSize :10,
 });

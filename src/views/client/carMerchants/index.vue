@@ -31,25 +31,12 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-
-        <!-- <el-form-item label="选择学校" prop="tenantId"> 
-          <schoolSelect  class="!w-[200px]" v-model="queryParams.tenantId"></schoolSelect>
-        </el-form-item> -->
-
-        <!-- <el-form-item label="内容状态" prop="status">
-          <el-select v-model="queryParams.status"  placeholder="全部" clearable class="!w-[100px]">
-            <el-option :value="1" label="正常" />
-            <el-option :value="0" label="禁用" />
+        <el-form-item label="商家状态" prop="active">
+          <el-select v-model="queryParams.active"  placeholder="全部" clearable class="!w-[100px]">
+            <el-option :value="true" label="已激活" />
+            <el-option :value="false" label="未激活" />
           </el-select>
-        </el-form-item>  -->
-
-        <!-- <el-form-item label="身份类型" prop="identityType"> 
-          <el-select v-model="queryParams.identityType"  placeholder="全部" clearable class="!w-[100px]">
-            <el-option :value="1" label="学生" />
-            <el-option :value="2" label="配送员" />
-          </el-select>
-        </el-form-item> -->
-
+        </el-form-item> 
         <el-form-item label="查询时间范围" prop="createTime"> 
           <el-date-picker
             v-model="datePicker"
@@ -100,25 +87,7 @@
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         @selection-change="handleSelectionChange"
       >
-        <!-- <el-table-column prop="sort" label="排序" width="100" /> -->
         <el-table-column type="selection" width="55" align="center" />
-        <!-- <el-table-column prop="imagePath" label="主图" min-width="200">
-          <template #default="scope">
-            <el-image
-              style="width: 100px; height: 100px"
-              :src="`${IMG_BASE_URL + scope.row.imagePath + PREURL}`"
-              :zoom-rate="1.2"
-              :max-scale="7"
-              :min-scale="0.2"
-              :preview-src-list="[`${IMG_BASE_URL + scope.row.imagePath }`]"
-              :initial-index="4"
-              fit="cover"
-              :lazy="true"
-              :preview-teleported	="true"
-              :z-index="9999"
-            />
-          </template>
-        </el-table-column>  -->
         <el-table-column prop="storeLogoUrl" label="商店图标" min-width="200">
           <template #default="scope">
             <el-upload
@@ -261,16 +230,22 @@ import { handleUrl } from "@/utils";
 import { UploadRawFile, UploadUserFile, UploadFile, UploadProps } from "element-plus";
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
 import {ref,computed} from "vue";
+import { table } from "console";
 const queryFormRef = ref(ElForm);
 const loading = ref(false);
 
 
 const queryParams:any = reactive({
-  tenantId:1,
   pageNum :1,
-  pageSize :10
+  pageSize :10,
+  keywords: "",
+  merchantName: "",
+  contactPhone: "",
+  storeAddress: "",
+  active: "",
+  createTime: [],
+  updateTime: [],
 });
-
 const datePicker = ref([])
 
 
@@ -297,12 +272,9 @@ function handleQuery() {
   startTime && (params.startTime = startTime);
   endTime && (params.endTime = endTime);
   console.log(params)
-  
   carMerchantsAPI.getPage(params).then((data:any) => {
-    data.list.map((item:any) => {
-      item.businessScope = item.businessScope.split(",")
-    })
     tableList.value = data.list;
+    console.log(tableList.value)
     total.value = data.total;
     loading.value = false;
   });
@@ -395,7 +367,7 @@ function formatTimeFromArray(timeArray) {
     while (timeArray.length < 2) {
     timeArray.push(0);
   }
-  let [hours, minutes, seconds] = timeArray.map(num => String(num).padStart(2, '0'));
+  let [hours, minutes] = timeArray.map(num => String(num).padStart(2, '0'));
   return `${hours}:${minutes}`;
   }
 }
