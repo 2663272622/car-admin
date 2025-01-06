@@ -58,12 +58,14 @@ const handleCloseModal = () => {
   
 }
 const handleClose = ()=>{
-  emit('change',currentCheck.value)
+  emit('change',currentCheck.value,currentMap.value)
   modelValue.value = false
+  currentMap.value = ''
 }
 
 const map = ref()
 const currentCheck = ref('')
+const currentMap = ref('')
 
  
 
@@ -75,6 +77,18 @@ const addPoint = (x,y)=>{
   map.value.addOverlay(marker);       
 }
 
+const getName = (lng,lat) => {
+  // @ts-ignore
+  var myGeo = new BMapGL.Geocoder();      
+  // 根据坐标得到地址描述    
+  // @ts-ignore
+  myGeo.getLocation(new BMapGL.Point(lng,lat), function(result){      
+      if (result){   
+        currentMap.value = result.address   
+      }      
+  });
+}
+
 watch(() => modelValue.value, async(newVal) => {
   if(newVal){
     await nextTick(() => {})
@@ -82,13 +96,17 @@ watch(() => modelValue.value, async(newVal) => {
     map.value = new BMapGL.Map("container");
     map.value.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
     map.value.addEventListener('click', function(e) {
+      console.log(e)
       addPoint(e.latlng.lng,e.latlng.lat)
+      
+      getName(e.latlng.lng,e.latlng.lat)
     });
 
     var geolocation = new BMapGL.Geolocation();
     geolocation.getCurrentPosition(function(r){
         if(props.coord){
-          const [ lng,lat ] = props.coord.split(',')
+          const [ lng,lat ] = props.coord?.split(',')
+          if(!lng || !lat)return;
           addPoint(lng,lat);
           map.value.centerAndZoom(new BMapGL.Point(lng,lat), 5); 
         }
@@ -117,6 +135,7 @@ const handleChange = ()=>{
   let check = options.value.find(i=>i.uid == selectData.value)
   console.log(check)
   addPoint(check.point.lng,check.point.lat)
+  getName(check.point.lng,check.point.lat)
 }
 const remoteMethod = async (query: string) => {
 	var local = new BMapGL.LocalSearch(map.value, {

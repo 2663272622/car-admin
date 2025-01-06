@@ -275,7 +275,9 @@ function handleQuery() {
   let params = {
     ...queryParams,
     pageNum: queryParams.pageNum,
-    pageSize: queryParams.pageSize
+    pageSize: queryParams.pageSize,
+
+    
   } 
   startTime && (params.startTime = startTime);
   endTime && (params.endTime = endTime);

@@ -45,6 +45,16 @@
         <el-form-item label="地址" prop="storeAddress"> 
           <el-input v-model="formData.storeAddress" placeholder="请输入地址" />
         </el-form-item> 
+        <el-form-item label="坐标" prop="longitude" >
+            <el-input
+              :value="formData.latitude ? (formData.latitude+','+formData.longitude) : ''"   placeholder="请输入地址" 
+              disabled
+            >
+              <template #suffix>
+                <el-icon @click="()=>{ showCheckCoord=true;}"><Position /></el-icon> 
+              </template>
+            </el-input>
+        </el-form-item>
         <el-form-item label="商店介绍" prop="storeDescription"> 
           <el-input v-model="formData.storeDescription" placeholder="请输入商店介绍" />
         </el-form-item> 
@@ -57,6 +67,7 @@
         <el-form-item label="购买总数" prop="bought" v-if="props.type === 'info'">
           <el-input-number class="!w-full" v-model="formData.bought" :precision="0" :step="1" :min="0" />
         </el-form-item>
+        
         <el-form-item label="购买历史" prop="boughtHistory" v-if="props.type === 'info'">
           <el-input class="!w-full" v-model="formData.boughtHistory" :precision="0" :step="1" :min="0" />
         </el-form-item>
@@ -76,7 +87,18 @@
           <el-button @click="handleCloseDialog">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-dialog> 
+    <checkCoord 
+      v-if="showCheckCoord" 
+      v-model="showCheckCoord" 
+      :coord="formData.longitude+','+formData.latitude" 
+      @change="(val,val2)=>{ 
+          let str = val.split(',')
+          formData.longitude = str[1] ;
+          formData.latitude = str[0];
+          formData.storeAddress = val2; 
+      }"
+    ></checkCoord> 
 </template>
 
 <script lang="ts" setup>
@@ -86,6 +108,7 @@ import { ElLoading } from "element-plus";
 import type { FormRules } from 'element-plus'
 import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
 import { fa, tr } from 'element-plus/es/locale';
+import checkCoord from "@/components/checkCoord/index.vue";
 const props = defineProps({
   modelValue: {
     type: Boolean, 
@@ -102,6 +125,8 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:modelValue","reload"]);  
 const modelValue = useVModel(props, 'modelValue')
+
+const showCheckCoord = ref(false)
 
 const formRef = ref(ElForm);
 
@@ -132,6 +157,9 @@ const rules = reactive<FormRules>({
   storeAddress: [{ required: true, message: "地址不能为空", trigger: "blur" }],
   openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
   closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
+  // "formData.longitude+','+formData.latitude" 
+  // openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
+  // closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
   contactPhone: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" },
                 { required: true, message: "联系电话不能为空", trigger: "blur" }],
 });
@@ -143,7 +171,7 @@ const getInfo = async() =>{
   const res = await signInAPI.getFormData(props.id) 
   res.openTime = formatTimeFromArray(res.openTime)
   res.closeTime = formatTimeFromArray(res.closeTime)
-  res.businessScope = res.businessScope.split(",")
+  res.businessScope = res.businessScope?.split(",")
   formData.value = res
   formKey.value = Math.random()
   console.log(res) 
