@@ -175,15 +175,20 @@
       <el-form ref="dataFormRef" :model="formData" :rules="rules" label-width="100px">
         <el-form-item label="通知标题" prop="title">
           <el-input v-model="formData.title" placeholder="通知标题" clearable />
-        </el-form-item>
-        <template v-if="formData.type != 23">
+        </el-form-item> 
+        <template v-if="formData.type == 23">
           <el-form-item label="通知内容" prop="content" >
-            <WangEditor v-model="formData.content" style="min-height: 480px; max-height: 500px" />
+            <schoolUpload parantPath='theme' v-model='formData.content' max='9'></schoolUpload>
+          </el-form-item>
+        </template>
+        <template v-else-if="formData.type == 22">
+          <el-form-item label="通知内容" prop="content" >
+            <el-input v-model="formData.content" placeholder="通知内容" clearable  type="textarea" />
           </el-form-item>
         </template>
         <template v-else>
           <el-form-item label="通知内容" prop="content"  >
-            <schoolUpload parantPath='theme' v-model='formData.content' max='9'></schoolUpload>
+            <WangEditor v-model="formData.content" style="min-height: 480px; max-height: 500px" />
           </el-form-item>
         </template>
         <el-form-item label="通知类型" prop="type">

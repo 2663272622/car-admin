@@ -75,11 +75,13 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
 // 上传
 const beforeUpload = (rawFile) => {
   let name = rawFile.name
-  if(!props.special){
-    name = new Date().getTime()+'_'+rawFile.name
+  name = new Date().getTime()+'_'+rawFile.name
+  let relativePath = props.parantPath+'/'+name
+  if(props.special){
+    relativePath =rawFile.name
   }
 
-  let relativePath = props.parantPath+'/'+name
+
 
   clientclient.put(relativePath,rawFile)
    .then((res) => {

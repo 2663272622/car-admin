@@ -31,6 +31,9 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
+        <el-form-item label="经营业务" prop="businessScope">
+          <Dict v-model="queryParams.businessScope" code="businessScope" class="!w-[100px]"/>
+        </el-form-item>
         <el-form-item label="商家状态" prop="active">
           <el-select v-model="queryParams.active"  placeholder="全部" clearable class="!w-[100px]">
             <el-option :value=true label="已激活" />
@@ -137,13 +140,13 @@
         <el-table-column prop="userName" label="用户姓名" min-width="150" />
         <el-table-column prop="userPhone" label="用户电话" width="150"/>
         <el-table-column prop="storeAddress" label="商户地址" min-width="150" />
-        <el-table-column prop="latitude" label="经度" width="150" />
         <el-table-column prop="longitude" label="纬度" width="150" />
+        <el-table-column prop="latitude" label="经度" width="150" />
         <el-table-column prop="storeDescription" label="商店描述" width="200" />
         <el-table-column prop="heat" label="热度" width="60" align="center" />
         <el-table-column prop="bought" label="购买总数" width="100" align="center" />
         <el-table-column prop="boughtHistory" label="购买历史" width="200" />
-        <el-table-column prop="active" label="是否激活" width="80">
+        <el-table-column prop="active" label="是否激活" width="80" fixed="right">
           <template #default="scope">
             <el-tag v-if="scope.row.active === true" type="success">激活</el-tag>
             <el-tag v-else-if="scope.row.active === false||scope.row.active === null" type="danger">未激活</el-tag>

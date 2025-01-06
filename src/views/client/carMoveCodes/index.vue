@@ -10,7 +10,12 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-        
+        <el-form-item label="挪车码状态" prop="active">
+          <el-select v-model="queryParams.active"  placeholder="全部" clearable class="!w-[100px]">
+            <el-option :value=true label="已激活" />
+            <el-option :value=false label="未激活" />
+          </el-select>
+        </el-form-item> 
         <el-form-item>
           <el-button class="filter-item" type="primary" icon="search" @click="handleQuery">
             搜索
@@ -84,8 +89,25 @@
         <el-table-column prop="id" label="ID" width="100" />
         <el-table-column prop="carNumber" label="车牌号" width="120" />
         <el-table-column prop="phoneNumber" label="联系电话" width="150" />
-        <el-table-column prop="messageText" label="消息内容" min-width="200" />
-        <el-table-column prop="contactRemark" label="联系人备注" min-width="200" />
+        <el-table-column prop="userAvatar" label="用户头像" min-width="100">
+          <template #default="scope">
+            <el-image
+              style="width: 50px; height: 50px;border-radius: 50%;"
+              :src="scope.row.userAvatar"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[scope.row.userAvatar]"
+              :initial-index="4"
+              fit="cover"
+              :lazy="true"
+              :preview-teleported	="true"
+              :z-index="9999"
+            />
+          </template>
+        </el-table-column> 
+        <el-table-column prop="userName" label="用户姓名" min-width="150" />
+        <el-table-column prop="wxPhoneNumber" label="微信手机号" width="120" />
         <el-table-column prop="active" label="是否激活" width="80">
           <template #default="scope">
             <el-tag v-if="scope.row.active === true" type="success">激活</el-tag>

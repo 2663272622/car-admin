@@ -48,6 +48,12 @@
         <el-form-item label="商店介绍" prop="storeDescription"> 
           <el-input v-model="formData.storeDescription" placeholder="请输入商店介绍" />
         </el-form-item> 
+        <el-form-item label="纬度" prop="longitude"> 
+          <el-input v-model="formData.longitude" placeholder="请输入纬度" />
+        </el-form-item> 
+        <el-form-item label="经度" prop="latitude"> 
+          <el-input v-model="formData.latitude" placeholder="请输入经度" />
+        </el-form-item> 
         <el-form-item label="购买总数" prop="bought" v-if="props.type === 'info'">
           <el-input-number class="!w-full" v-model="formData.bought" :precision="0" :step="1" :min="0" />
         </el-form-item>
@@ -124,8 +130,8 @@ const rules = reactive<FormRules>({
   // businessScope: [{ required: true, message: "营业类型不能为空", trigger: "blur" }],
   userId: [{ required: true, message: "用户ID不能为空", trigger: "blur" }],
   storeAddress: [{ required: true, message: "地址不能为空", trigger: "blur" }],
-  // openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
-  // closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
+  openTime: [{ required: true, message: "开门时间不能为空", trigger: "change" }],
+  closeTime: [{ required: true, message: "关门时间不能为空", trigger: "change" }],
   contactPhone: [{ pattern: /^1[3456789]\d{9}$/, message: "手机号格式不正确", trigger: "blur" },
                 { required: true, message: "联系电话不能为空", trigger: "blur" }],
 });
@@ -222,7 +228,7 @@ function formatTimeFromArray(timeArray) {
     while (timeArray.length < 2) {
     timeArray.push(0);
   }
-  let [hours, minutes, seconds] = timeArray.map(num => String(num).padStart(2, '0'));
+  let [hours, minutes] = timeArray.map(num => String(num).padStart(2, '0'));
   return `${hours}:${minutes}`;
   }
 }
