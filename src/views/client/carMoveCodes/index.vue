@@ -21,6 +21,7 @@
             搜索
           </el-button>
           <el-button icon="refresh" @click="handleResetQuery">重置</el-button>
+          <el-button icon="refresh" @click="handleNewCode">生成挪车吗</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -220,6 +221,7 @@
       </template>
     </el-dialog>
     </div>
+    <newcar v-model="showNewCar"></newcar>
   </div>
 </template>
 
@@ -234,7 +236,9 @@ import themeEdit from '@/views/client/carMoveCodes/edit.vue'
 import schoolPagination from "@/components/commonSelect/schoolPagination.vue";
 import carMerchantsAPI from "@/api/system/client/carMerchants";
 import { ElLoading } from "element-plus";
+import newcar from './codecanvas/newcar.vue'
 
+const showNewCar = ref(true)
 
 const queryFormRef = ref(ElForm);
 const loading = ref(false);
@@ -245,6 +249,10 @@ const queryParams: any = reactive({
   pageSize :10,
 });
 
+const handleNewCode = ()=>{
+  console.log("生成挪车吗")
+  showNewCar.value = true
+}
 
 
 const tableList = ref([]); 
