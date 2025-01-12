@@ -7,6 +7,26 @@
     <div class="car-drawer-content">
       <div class="car-drawer-content-left" v-if="showQR">
         <el-form :model="formData" label-width="auto" style="max-width: 600px">
+          <!-- 画布相关 -->
+          <el-form-item label="画布背景">
+            <el-upload
+              class="avatar-uploader"
+              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+              :show-file-list="false" 
+              :before-upload="beforeCanvasUpload"
+            > 
+                <img class="w-55px h-55px" v-if="canvasData.cimg" :src="canvasData.cimg" />
+                <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            </el-upload>
+          </el-form-item> 
+          <el-form-item label="画布宽度">
+              <el-slider v-model="canvasData.w" @change="changeCanvas" :min="0" :max="1000" /> 
+          </el-form-item>
+          <el-form-item label="画布高度">
+              <el-slider v-model="canvasData.h" @change="changeCanvas" :min="0" :max="1000" /> 
+          </el-form-item>
+
+
           <el-form-item label="QR Logo">
             <el-upload
               class="avatar-uploader"
@@ -44,24 +64,6 @@
 
           <!-- <el-button type="primary" @click="renderQR" class="mb-20px">生成二维码</el-button> -->
 
-          <!-- 画布相关 -->
-          <el-form-item label="画布背景">
-            <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false" 
-              :before-upload="beforeCanvasUpload"
-            > 
-                <img class="w-55px h-55px" v-if="canvasData.cimg" :src="canvasData.cimg" />
-                <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-            </el-upload>
-          </el-form-item> 
-          <el-form-item label="宽度">
-              <el-slider v-model="canvasData.w" @change="changeCanvas" :min="0" :max="1000" /> 
-          </el-form-item>
-          <el-form-item label="高度">
-              <el-slider v-model="canvasData.h" @change="changeCanvas" :min="0" :max="1000" /> 
-          </el-form-item>
           <el-form-item label="二维码位置">
               <el-slider v-model="canvasData.x" @change="changeCanvas" :min="0" :max="canvasData.w" /> 
           </el-form-item>
