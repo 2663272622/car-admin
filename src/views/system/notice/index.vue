@@ -131,8 +131,8 @@
             >
               撤回
             </el-button>
+              <!-- v-if="scope.row.publishStatus != 1" -->
             <el-button
-              v-if="scope.row.publishStatus != 1"
               v-hasPerm="['sys:notice:edit']"
               type="primary"
               size="small"
