@@ -108,6 +108,7 @@
         </el-table-column> 
         <el-table-column prop="userName" label="用户姓名" min-width="150" />
         <el-table-column prop="wxPhoneNumber" label="微信手机号" width="120" />
+        <el-table-column prop="messageText" label="消息通知" width="120" />
         <el-table-column prop="active" label="是否激活" width="80">
           <template #default="scope">
             <el-tag v-if="scope.row.active === true" type="success">激活</el-tag>
