@@ -95,7 +95,7 @@
           <template #default="scope">
             <el-upload
               class="table-pre"
-              :file-list="handleUrl(scope.row.storeLogoUrl)"
+              :file-list="scope.row.storeLogoUrl"
               list-type="picture-card"
               disabled
               multiple
@@ -267,7 +267,6 @@ watch(
     handleQuery();
   }
 );
-
 // 修改查询函数，确保在查询时使用正确的分页参数
 function handleQuery() {
   loading.value = true;
@@ -286,7 +285,18 @@ function handleQuery() {
     data.list.map((item:any) =>{
       if(item.businessScope){
         item.businessScope=item.businessScope.split(',')
-      } 
+      }
+    })
+    data.list.map((item:any) => {
+      if (item.storeLogoUrl) {
+        if (item.storeLogoUrl.includes('http:')) {
+          return item.storeLogoUrl = item.storeLogoUrl.split(',').filter(i=>i).map(i=>({url:i,name:''}))
+        }
+        else {
+          return item.storeLogoUrl = item.storeLogoUrl ? handleUrl(item.storeLogoUrl):''
+        }
+      }
+      console.log(item.storeLogoUrl)
     })
     tableList.value = data.list;
     console.log(tableList.value)
@@ -312,8 +322,12 @@ const preData = ref({
 
 // 预览图片
 const handlePictureCardPreview = (uploadFile: UploadFile,urls) => {
-  preData.value.urls = handleUrl(urls,false).map(i=>i.url)
-  preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
+  if(urls.includes('http:')){
+    preData.value.urls.map((item,index)=>item.url == uploadFile.url && (preData.value.vIndex = index))
+  }else{
+    preData.value.urls = handleUrl(urls,false).map(i=>i.url)
+    preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
+  }
   preData.value.showPre = true;
 };
 
