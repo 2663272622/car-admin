@@ -105,9 +105,30 @@
     >
       <el-form ref="dataFormRef" :model="formData" :rules="computedRules" label-width="100px">
         <el-card shadow="never">
-          <el-form-item label="字典标签" prop="label">
+          <el-form-item label="标签类型">
+            <!-- <el-tag v-if="formData.tagType" :type="formData.tagType" class="mr-2">
+              {{ formData.label }}
+            </el-tag> -->
+            <el-radio-group v-model="formData.tagType">
+              <el-radio value="success" border size="small">success</el-radio>
+              <el-radio value="warning" border size="small">warning</el-radio>
+              <el-radio value="info" border size="small">info</el-radio>
+              <el-radio value="primary" border size="small">primary</el-radio>
+              <el-radio value="danger" border size="small">danger</el-radio>
+              <el-radio value="image" border size="small">轮播图</el-radio>
+              <el-radio value="" border size="small">清空</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <template v-if="formData.tagType as string === 'image'">
+            <el-form-item label="字典标签" prop="label">
+              <dict-select v-model="formData.label" code="carouselutils" class="!w-[100%]" placeholder="请选择轮播图功能"></dict-select>
+          </el-form-item>
+          </template>
+          <template v-else>
+            <el-form-item label="字典标签" prop="label">
             <el-input v-model="formData.label" placeholder="请输入字典标签" />
           </el-form-item>
+          </template>
           <el-form-item label="字典值" prop="value">
             <el-input v-model="formData.value" placeholder="请输入字典值" />
           </el-form-item>
@@ -119,19 +140,6 @@
           </el-form-item>
           <el-form-item label="排序">
             <el-input-number v-model="formData.sort" controls-position="right" />
-          </el-form-item>
-          <el-form-item label="标签类型">
-            <el-tag v-if="formData.tagType" :type="formData.tagType" class="mr-2">
-              {{ formData.label }}
-            </el-tag>
-            <el-radio-group v-model="formData.tagType">
-              <el-radio value="success" border size="small">success</el-radio>
-              <el-radio value="warning" border size="small">warning</el-radio>
-              <el-radio value="info" border size="small">info</el-radio>
-              <el-radio value="primary" border size="small">primary</el-radio>
-              <el-radio value="danger" border size="small">danger</el-radio>
-              <el-radio value="" border size="small">清空</el-radio>
-            </el-radio-group>
           </el-form-item>
           <el-form-item label="图片">
             <schoolUpload v-model="formData.image" :special="true"></schoolUpload>
@@ -150,6 +158,7 @@
 </template>
 
 <script setup lang="ts">
+import dictSelect from '@/components/Dict/index.vue'
 import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
 import { PREURL,IMG_BASE_URL } from "@/utils/const";
 defineOptions({
