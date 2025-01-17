@@ -25,10 +25,16 @@
         <el-form-item label="使用次数" prop="usageCount" v-if="props.type == 'info'">
         <el-input-number class="!w-full" v-model="formData.usageCount" :precision="0" :step="1" :min="0" />
       </el-form-item>
-        <el-form-item label="激活状态" prop="active" v-if="props.type == 'info'">
+        <el-form-item label="激活状态" prop="active" v-if="props.type != 'add'">
           <el-radio-group v-model="formData.active">
             <el-radio :value="true" label="已激活" >已激活</el-radio>
             <el-radio :value="false" label="未激活" >未激活</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="是否禁用" prop="banFlag" v-if="props.type != 'add'">
+          <el-radio-group v-model="formData.banFlag">
+            <el-radio :value="true" label="已禁用" >已禁用</el-radio>
+            <el-radio :value="false" label="已激活" >已激活</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form> 

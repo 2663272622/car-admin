@@ -116,6 +116,18 @@
             <el-tag v-else-if="scope.row.active === false||scope.row.active === null" type="danger">未激活</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="banFlag" label="是否禁用" width="80">
+          <template #default="scope">
+            <el-tag v-if="scope.row.banFlag === true" type="danger">已禁用</el-tag>
+            <el-tag v-else-if="scope.row.banFlag === false||scope.row.banFlag === null" type="success">已激活</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="banFlag" label="是否下载" width="80">
+          <template #default="scope">
+            <el-tag v-if="scope.row.ext1 === '0'" type="danger">未下载</el-tag>
+            <el-tag v-else-if="scope.row.ext1=== '1'" type="success">已下载</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="usageCount" label="使用次数" width="100" align="center" />
         <el-table-column prop="updateDate" label="更新日期" width="180">
           <template #default="scope">

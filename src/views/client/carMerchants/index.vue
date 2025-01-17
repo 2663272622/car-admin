@@ -322,12 +322,8 @@ const preData = ref({
 
 // 预览图片
 const handlePictureCardPreview = (uploadFile: UploadFile,urls) => {
-  if(urls.includes('http:')){
-    preData.value.urls.map((item,index)=>item.url == uploadFile.url && (preData.value.vIndex = index))
-  }else{
-    preData.value.urls = handleUrl(urls,false).map(i=>i.url)
-    preData.value.urls.map((item,index)=>item + PREURL == uploadFile.url && (preData.value.vIndex = index))
-  }
+  preData.value.urls = urls.map(i=>i.url)
+  preData.value.urls.map((item,index)=>item == uploadFile.url && (preData.value.vIndex = index))
   preData.value.showPre = true;
 };
 

@@ -63,11 +63,13 @@
         </el-form-item> 
         <el-form-item label="经度" prop="latitude"> 
           <el-input v-model="formData.latitude" placeholder="请输入经度" />
-        </el-form-item> 
+        </el-form-item>
+        <el-form-item label="购买数量" v-if="props.type != 'info'">
+          <el-input-number class="!w-full" v-model="nowBought" :precision="0" :step="1" :min="0" />
+        </el-form-item>
         <el-form-item label="购买总数" prop="bought" v-if="props.type === 'info'">
           <el-input-number class="!w-full" v-model="formData.bought" :precision="0" :step="1" :min="0" />
         </el-form-item>
-        
         <el-form-item label="购买历史" prop="boughtHistory" v-if="props.type === 'info'">
           <el-input class="!w-full" v-model="formData.boughtHistory" :precision="0" :step="1" :min="0" />
         </el-form-item>
@@ -109,6 +111,7 @@ import type { FormRules } from 'element-plus'
 import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
 import { fa, tr } from 'element-plus/es/locale';
 import checkCoord from "@/components/checkCoord/index.vue";
+import { number } from 'echarts';
 const props = defineProps({
   modelValue: {
     type: Boolean, 
@@ -127,7 +130,7 @@ const emit = defineEmits(["update:modelValue","reload"]);
 const modelValue = useVModel(props, 'modelValue')
 
 const showCheckCoord = ref(false)
-
+const nowBought=ref(0)
 const formRef = ref(ElForm);
 
 const formData = ref();
@@ -168,6 +171,7 @@ const formKey = ref(-1)
 
 const getInfo = async() =>{
   if(!props.id) return;
+  nowBought.value=0
   const res = await signInAPI.getFormData(props.id) 
   res.openTime = formatTimeFromArray(res.openTime)
   res.closeTime = formatTimeFromArray(res.closeTime)
@@ -188,6 +192,12 @@ function handleSubmit() {
         background: 'rgba(0, 0, 0, 0.7)',
       })  
       formData.value.businessScope = formData.value?.businessScope?.join(",")
+      formData.value.bought=String(nowBought.value+Number(formData.value.bought))
+      if(formData.value.boughtHistory){
+        formData.value.boughtHistory=formData.value.boughtHistory+','+nowBought.value
+      }else{
+        formData.value.boughtHistory=nowBought.value
+      }
       if (props.type == 'add') {
         console.log(formData.value)
         signInAPI.add(formData.value).then((res) => {

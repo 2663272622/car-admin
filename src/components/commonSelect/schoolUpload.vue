@@ -27,6 +27,7 @@ import type { UploadProps, UploadUserFile } from 'element-plus'
 import { client } from '@/utils/upload'
 import { useVModel } from '@vueuse/core' 
 import { IMG_BASE_URL } from '@/utils/const'
+import { i } from 'vite/dist/node/types.d-aGj9QkWt'
 
 type Files = 'theme' | 'wall';
 
@@ -95,9 +96,9 @@ const beforeUpload = (rawFile) => {
 
 const fileList = computed(()=>{
   const arr = (modelValue.value || '').split(",").filter(i=>i).map(i=>({
-    name: String(Math.random()),
-    url: IMG_BASE_URL + i,
-  }))
+  name: String(Math.random()),
+  url: modelValue.value.includes('http') ? i : IMG_BASE_URL + i
+}))
   return arr.length > 0 ? arr : []
 })
 
