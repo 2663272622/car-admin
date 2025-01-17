@@ -27,7 +27,7 @@
             搜索
           </el-button>
           <el-button icon="refresh" @click="handleResetQuery">重置</el-button>
-          <el-button icon="refresh" @click="handleNewCode">生成挪车吗</el-button>
+          <!-- <el-button icon="refresh" @click="handleNewCode">生成挪车吗</el-button> -->
         </el-form-item>
       </el-form>
     </div>
@@ -240,7 +240,7 @@
       </template>
     </el-dialog>
     </div>
-    <newcar v-model="showNewCar"></newcar>
+    <newcar v-model="showNewCar" :newcarcode="newcarcode"></newcar>
   </div>
 </template>
 
@@ -257,7 +257,7 @@ import carMerchantsAPI from "@/api/system/client/carMerchants";
 import { ElLoading } from "element-plus";
 import newcar from './codecanvas/newcar.vue'
 
-const showNewCar = ref(true)
+const showNewCar = ref(false)
 
 const queryFormRef = ref(ElForm);
 const loading = ref(false);
@@ -268,7 +268,10 @@ const queryParams: any = reactive({
   pageSize :10,
 });
 
-const handleNewCode = ()=>{
+
+const newcarcode = ref({})
+const handleNewCode = (obj)=>{
+  newcarcode.value = obj || {} 
   console.log("生成挪车吗")
   showNewCar.value = true
 }
@@ -382,17 +385,19 @@ interface Generator {
 
 // 提交表单
 function handleSubmit() {
-      const loading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-        background: 'rgba(0, 0, 0, 0.7)',
-      })  
-      carMoveCodesAPI.generated(Generate.number,Generate.carMerchantId)
-        .then(() => {
-          ElMessage.success("操作成功");
-          handleResetQuery();
-        })
-        .finally(() => (GenerateDialog.value = false,loading.close()));
+  
+  const loading = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })  
+  carMoveCodesAPI.generated(Generate.number,Generate.carMerchantId)
+    .then((data) => {
+      handleNewCode(data)
+      ElMessage.success("操作成功");
+      handleResetQuery();
+    })
+    .finally(() => (GenerateDialog.value = false,loading.close()));
 } 
 
 // 发送请求获取商家id
