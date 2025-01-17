@@ -16,6 +16,12 @@
             <el-option :value=false label="未激活" />
           </el-select>
         </el-form-item> 
+        <el-form-item label="挪车码是否下载" prop="downloadFlag">
+          <el-select v-model="queryParams.downloadFlag"  placeholder="全部" clearable class="!w-[100px]">
+            <el-option :value=true label="已下载" />
+            <el-option :value=false label="未下载" />
+          </el-select>
+        </el-form-item> 
         <el-form-item>
           <el-button class="filter-item" type="primary" icon="search" @click="handleQuery">
             搜索
