@@ -58,11 +58,11 @@
         <el-form-item label="商店介绍" prop="storeDescription"> 
           <el-input v-model="formData.storeDescription" placeholder="请输入商店介绍" />
         </el-form-item> 
-        <el-form-item label="纬度" prop="longitude"> 
-          <el-input v-model="formData.longitude" placeholder="请输入纬度" />
+        <el-form-item label="纬度" prop="latitude"> 
+          <el-input v-model="formData.latitude" placeholder="请输入纬度" />
         </el-form-item> 
-        <el-form-item label="经度" prop="latitude"> 
-          <el-input v-model="formData.latitude" placeholder="请输入经度" />
+        <el-form-item label="经度" prop="longitude"> 
+          <el-input v-model="formData.longitude" placeholder="请输入经度" />
         </el-form-item>
         <el-form-item label="购买数量" v-if="props.type != 'info'">
           <el-input-number class="!w-full" v-model="nowBought" :precision="0" :step="1" :min="0" />
@@ -93,11 +93,11 @@
     <checkCoord 
       v-if="showCheckCoord" 
       v-model="showCheckCoord" 
-      :coord="formData.longitude+','+formData.latitude" 
+      :coord="formData.latitude+','+formData.longitude" 
       @change="(val,val2)=>{ 
           let str = val.split(',')
-          formData.longitude = str[1] ;
-          formData.latitude = str[0];
+          formData.longitude = str[0] ;
+          formData.latitude = str[1];
           formData.storeAddress = val2; 
       }"
     ></checkCoord> 
@@ -109,9 +109,7 @@ import signInAPI from "@/api/system/client/carMerchants";
 import { ElLoading } from "element-plus";
 import type { FormRules } from 'element-plus'
 import schoolUpload from "@/components/commonSelect/schoolUpload.vue";
-import { fa, tr } from 'element-plus/es/locale';
 import checkCoord from "@/components/checkCoord/index.vue";
-import { number } from 'echarts';
 const props = defineProps({
   modelValue: {
     type: Boolean, 
