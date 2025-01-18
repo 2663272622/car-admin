@@ -21,9 +21,11 @@
           </el-form-item> 
           <el-form-item label="画布宽度">
               <el-slider v-model="canvasData.w" @change="changeCanvas" :min="0" :max="1000" /> 
+              <el-input-number v-model="canvasData.w" :precision="2" @change="changeCanvas" :step="1" :max="1000" />
           </el-form-item>
           <el-form-item label="画布高度">
               <el-slider v-model="canvasData.h" @change="changeCanvas" :min="0" :max="1000" /> 
+              <el-input-number v-model="canvasData.h" :precision="2" @change="changeCanvas" :step="1" :max="1000" />
           </el-form-item>
 
           <el-divider content-position="left">设置二维码</el-divider>
@@ -52,13 +54,16 @@
             </el-form-item> 
             <template v-if="formData.logoImage"> 
               <el-form-item label="LOGO大小">
-                <el-slider v-model="formData.logoScale" @change="changeQR"  :min="0" :step="0.1" :max="0.9"/> 
+                <!-- <el-slider v-model="formData.logoScale" @change="changeQR"  :min="0" :step="1" :max="0.9"/>  -->
+                <el-input-number v-model="formData.logoScale" :precision="2" @change="changeQR" :step="1" :max="0.9" />
               </el-form-item> 
               <el-form-item label="LOGO边距">
-                <el-slider v-model="formData.logoMargin" @change="changeQR"  :min="0" /> 
+                <!-- <el-slider v-model="formData.logoMargin" @change="changeQR"  :min="0" />  -->
+                <el-input-number v-model="formData.logoMargin" :precision="2" @change="changeQR" :step="1" :min="0" :max="0.9" />
               </el-form-item> 
               <el-form-item label="LOGO圆角">
-                <el-slider v-model="formData.logoCornerRadius" @change="changeQR"  :min="0" /> 
+                <!-- <el-slider v-model="formData.logoCornerRadius" @change="changeQR"  :min="0" />  -->
+                <el-input-number v-model="formData.logoCornerRadius" :precision="2" @change="changeQR" :step="1" :min="0" />
               </el-form-item> 
             </template>
             <el-form-item label="色块颜色">
@@ -70,13 +75,16 @@
           </template>
 
           <el-form-item label="二维码尺寸">
-            <el-slider v-model="formData.size" @change="changeQR" :min="5" :max="300"/> 
+            <el-slider v-model="formData.size" @change="changeQR" :min="5" :max="500"/> 
+            <el-input-number v-model="formData.size" :precision="2" @change="changeQR" :step="1" :min="5" />
           </el-form-item> 
-          <el-form-item label="二维码位置">
+          <el-form-item label="二维码X">
               <el-slider v-model="canvasData.x" @change="changeCanvas" :min="0" :max="canvasData.w" /> 
+                <el-input-number v-model="canvasData.x" :precision="2" @change="changeCanvas" :step="1" :min="0" :max="canvasData.w" />
           </el-form-item>
-          <el-form-item label="二维码位置">
+          <el-form-item label="二维码Y">
               <el-slider v-model="canvasData.y" @change="changeCanvas" :min="0" :max="canvasData.h" /> 
+                <el-input-number v-model="canvasData.y" :precision="2" @change="changeCanvas" :step="1" :min="0" :max="canvasData.h" />
           </el-form-item>
 
           <el-divider content-position="left">设置文本</el-divider>
@@ -84,16 +92,19 @@
               <el-input v-model="canvasData.txt" style="width: 100%" @input="changeCanvas" placeholder="Please input" />
           </el-form-item>
           <el-form-item label="文本大小">
-              <el-slider v-model="canvasData.fontsize" @change="changeCanvas" :min="0" :max="100" /> 
+              <!-- <el-slider v-model="canvasData.fontsize" @change="changeCanvas" :min="0" :max="100" />  -->
+                <el-input-number v-model="canvasData.fontsize" :precision="2" @change="changeCanvas" :step="1" :min="0" :max="100" />
           </el-form-item> 
           <el-form-item label="文本颜色">
             <el-color-picker v-model="canvasData.color" @change="changeCanvas" show-alpha />
           </el-form-item>
           <el-form-item label="文本X">
               <el-slider v-model="canvasData.fontx" @change="changeCanvas" :min="0" :max="canvasData.w" /> 
+                <el-input-number v-model="canvasData.fontx" :precision="2" @change="changeCanvas" :step="1" :min="0" :max="canvasData.w" />
           </el-form-item> 
           <el-form-item label="文本Y">
               <el-slider v-model="canvasData.fonty" @change="changeCanvas" :min="0" :max="canvasData.w" /> 
+                <el-input-number v-model="canvasData.fonty" :precision="2" @change="changeCanvas" :step="1" :min="0" :max="canvasData.h" />
           </el-form-item> 
 
           <el-form-item>
@@ -107,6 +118,11 @@
       <div class="car-drawer-content-right bg-#cca6a6"> 
         <canvas id="myCanvas"  style="border:1px solid #ccc" :width="canvasData.w" :height="canvasData.h"></canvas>
         
+        
+        
+        
+        <canvas id="myScanCanvas"  style="border:1px solid #ccc" :width="formData.size" :height="formData.size"></canvas>
+        
       </div>
     </div>
   </el-drawer>
@@ -117,6 +133,7 @@ import { useVModel } from '@vueuse/core'
 import { ElLoading } from 'element-plus';
 import { ref } from 'vue'; 
 import vueQr from 'vue-qr/src/packages/vue-qr.vue' 
+import { renderScan } from '@/utils/canvas'
  
 const props = defineProps({
   modelValue: {
@@ -145,7 +162,7 @@ const formData = reactive({
 })
 const canvasData = reactive({
   cimg:"",
-  w:400,
+  w:1000,
   h:300,
   x:0,
   y:0,
@@ -193,6 +210,7 @@ const renderQR =async() => {
     }); 
   }else{
     qrDemoImg.value = `http://img-ischool.oss-cn-beijing.aliyuncs.com/qrcodes/qrCode_7700.PNG`
+    // qrDemoImg.value = `https://img-ischool.oss-cn-beijing.aliyuncs.com/qrcodes/qqq.png`
     changeCanvas()
   }
 } 
@@ -209,57 +227,167 @@ const changeQR = ()=>{
 }
 
 const renderTimer = ref(0)
+let timer = null;
 const changeCanvas = ()=>{
-  if(new Date().getTime() - renderTimer.value > 150){
+  if(timer){
+    clearTimeout(timer)
+    timer = null;
+  } 
+
+  timer = setTimeout(()=>{
+    console.log("直接执行")
     renderCanvas()
-  }else{ 
-    setTimeout(()=>{
-      changeCanvas()
-    },150)
-  }
+  },500)
+  // let tt = new Date().getTime() - renderTimer.value
+  // if(tt > 1000){
+  //   console.log("直接执行", tt)
+  // }else{ 
+  //   setTimeout(()=>{
+  //     changeCanvas()
+  //   },150)
+  // }
 }
 const renderCanvas = (cimgurl, ckey)=>{
-  return new Promise((resolve,reject)=>{
     renderTimer.value = new Date().getTime() 
+  return new Promise((resolve,reject)=>{
     // 获取 canvas 元素和 2D 上下文
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let loadimg = 0; 
 
-    const img2 = new Image();
-    img2.onload = function() {
-        ++loadimg
-        ctx.drawImage(img2, canvasData.x, canvasData.y, formData.size, formData.size); // 在指定位置绘制第二张图片
-        // 获取图像的像素数据
-        var imageData = ctx.getImageData(canvasData.x, canvasData.y, formData.size, formData.size);
-        var data = imageData.data;
 
-        for (var i = 0; i < data.length; i += 4) {
-          var r = data[i];     
-          var g = data[i + 1]; 
-          var b = data[i + 2]; 
-          if (r > 200 && g > 200 && b > 200) {
-            data[i + 3] = 0; 
-          }
-        }
-        ctx.putImageData(imageData, canvasData.x, canvasData.y);
-        
-        // 创建图片对象
-        const img = new Image();
-        img.onload = function() {
-            ++loadimg
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // 将图片缩放到 canvas 尺寸
-
-            
-        };
-        img.src = canvasData.cimg; 
-
-    }; 
-    img2.src = cimgurl ? cimgurl : qrDemoImg.value ;
-    img2.setAttribute('crossOrigin', ''); 
-
+    const myScanCanvas = document.getElementById("myScanCanvas");
+    const scanCtx = myScanCanvas.getContext("2d");
+    scanCtx.clearRect(0, 0,formData.size, formData.size);
     
+    // ctx.globalCompositeOperation = 'destination-out'; // 设置合成模式为去除图像
+      // 创建图片对象
+      const img = new Image();
+      img.onload = function() {
+          ++loadimg
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // 将图片缩放到 canvas 尺寸  
+ 
+
+          nextTick(()=>{
+              const scanimg = new Image();
+              scanimg.onload = function() {
+                  scanCtx.drawImage(scanimg, 0, 0, formData.size, formData.size); // 将图片缩放到 canvas 尺寸  
+                  // const radius = formData.size / 2;    // 圆形的半径
+                  // const centerX = radius;  // 圆形的中心X坐标
+                  // const centerY = radius;  // 圆形的中心X坐标
+
+                  // // 创建圆形的裁剪区域
+                  // scanCtx.save();  // 保存当前状态
+                  // scanCtx.beginPath();
+                  // scanCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                  // scanCtx.closePath();
+                  // scanCtx.clip();  // 应用裁剪区域
+
+                  // // 在裁剪区域内绘制上传的图片
+                  // scanCtx.drawImage(
+                  //   scanimg, 
+                  //   0,
+                  //   0, 
+                  //   formData.size, 
+                  //   formData.size,  
+                  // ); 
+                  
+                  let imageData = scanCtx.getImageData( 0,  0,  formData.size,  formData.size );
+                  let data = imageData.data;
+                  for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i];     
+                    let g = data[i + 1]; 
+                    let b = data[i + 2]; 
+                    if (r > 200 && g > 200 && b > 200) {
+                      data[i + 3] = 0; 
+                    }
+                  } 
+                  scanCtx.clearRect(0, 0,formData.size, formData.size);
+                  scanCtx.putImageData(imageData,0,0);
+                  
+                  // // 恢复画布的裁剪区域，以便后续操作不受影响
+                  // scanCtx.restore();
+                  const dataURL = myScanCanvas.toDataURL('image/png');
+                  // console.log('生成二维码',dataURL)
+
+
+                  const img2 = new Image(); 
+                  img2.src = dataURL //cimgurl ? cimgurl : qrDemoImg.value ;
+                  img2.onload = function() { 
+                    ctx.drawImage(
+                      img2, 
+                      canvasData.x,
+                      canvasData.y, 
+                      formData.size, 
+                      formData.size,  
+                    ); 
+                    ++loadimg
+                  }
+              }
+              scanimg.src = cimgurl ? cimgurl : qrDemoImg.value ;
+              scanimg.setAttribute('crossOrigin', ''); 
+
+          })
+
+
+      //     img2.onload = function() {
+      // //     renderScan(canvas,'square','',img2, canvasData.x, canvasData.y, formData.size)
+      //         // 计算圆形图片的裁剪区域
+      //         const radius = formData.size / 2;    // 圆形的半径
+      //         const centerX = canvasData.x + radius;  // 圆形的中心X坐标
+      //         const centerY = canvasData.y + radius;  // 圆形的中心X坐标
+
+      //         // 创建圆形的裁剪区域
+      //         ctx.save();  // 保存当前状态
+      //         ctx.beginPath();
+      //         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      //         ctx.closePath();
+      //         ctx.clip();  // 应用裁剪区域
+
+      //         // 在裁剪区域内绘制上传的图片
+      //         ctx.drawImage(
+      //           img2, 
+      //           canvasData.x,
+      //           canvasData.y, 
+      //           formData.size, 
+      //           formData.size,  
+      //         ); 
+              
+      //         let imageData = ctx.getImageData(
+      //           canvasData.x,
+      //           canvasData.y, 
+      //           formData.size, 
+      //           formData.size
+      //         );
+      //         let data = imageData.data;
+      //         // for (let i = 0; i < data.length; i += 4) {
+      //         //   let r = data[i];     
+      //         //   let g = data[i + 1]; 
+      //         //   let b = data[i + 2]; 
+      //         //   if (r > 200 && g > 200 && b > 200) {
+      //         //     data[i + 3] = 0; 
+      //         //   }
+      //         // }
+      //         console.log(imageData.data)
+      //         ctx.putImageData(imageData,canvasData.x,canvasData.y);
+              
+      //         // 恢复画布的裁剪区域，以便后续操作不受影响
+      //         ctx.restore();
+              
+      //       ++loadimg
+      //     };
+
+
+
+
+
+
+
+          
+    };
+    img.src = canvasData.cimg; 
+      
     function rendertxt(){
       if(loadimg == 2){
         ctx.font = `${canvasData.fontsize}px Arial`;  // 字体大小和类型
@@ -282,16 +410,11 @@ const renderCanvas = (cimgurl, ckey)=>{
 
 const exportCanvas = ()=>{
   let arr = Object.keys(props.newcarcode) 
+  console.log("导出arr",arr)
   const canvas = document.getElementById("myCanvas");
   const zip = new JSZip();  // 创建一个空的 ZIP 文件
 
-  function exportImg(index){
-    if(arr.length <= (index + 1)){
-      zip.generateAsync({ type: "blob" }).then(function(content) {
-          saveAs(content, "images.zip");  // 使用 FileSaver.js 保存并下载 ZIP 文件
-      });
-      return;
-    }
+  function exportImg(index){ 
     let key = arr[index]
     let imgurl = props.newcarcode[key]
 
@@ -314,7 +437,15 @@ const exportCanvas = ()=>{
       // link.href = dataURL;
       // link.download = 'scan.'+key+'.png';  // 设置下载的文件名
       // link.click();
-      exportImg(++index)
+      
+      if(arr.length <= (index + 1)){
+        zip.generateAsync({ type: "blob" }).then(function(content) {
+            saveAs(content, "images.zip");  // 使用 FileSaver.js 保存并下载 ZIP 文件
+        });
+        return;
+      }else{
+        exportImg(++index)
+      }
     })
 
   }
