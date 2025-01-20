@@ -25,7 +25,7 @@
           </el-form-item>
           <el-form-item label="画布高度">
               <el-slider v-model="canvasData.h" @change="changeCanvas" :min="0" :max="1000" /> 
-              <el-input-number v-model="canvasData.h" :precision="2" @change="changeCanvas" :step="1" :max="1000" />
+              <el-input-number v-model="canvasData.h" disabled :precision="2" @change="changeCanvas" :step="1" :max="1000" />
           </el-form-item>
 
           <el-divider content-position="left">设置二维码</el-divider>
@@ -75,8 +75,8 @@
           </template>
 
           <el-form-item label="二维码尺寸">
-            <el-slider v-model="formData.size" @change="changeQR" :min="5" :max="500"/> 
-            <el-input-number v-model="formData.size" :precision="2" @change="changeQR" :step="1" :min="5" />
+            <el-slider v-model="formData.size" @change="changeQR" :min="5"  :max="canvasData.w"/> 
+            <el-input-number v-model="formData.size" :precision="2" @change="changeQR" :step="1" :min="5" :max="canvasData.w" />
           </el-form-item> 
           <el-form-item label="二维码X">
               <el-slider v-model="canvasData.x" @change="changeCanvas" :min="0" :max="canvasData.w" /> 
@@ -187,10 +187,36 @@ const beforeAvatarUpload = (file) =>{
   return false;
 }
 const beforeCanvasUpload = (file) =>{
-  const reader = new FileReader();
+  const reader = new FileReader(); 
+          // var multiple = canvasData.w / img.width;
+          // var height = img.height;
+          // // console.log(width,height)
+          // // debugger
+          // canvasData.h = multiple * height 
   reader.addEventListener('load', ()=> {
     canvasData.cimg = reader.result as string
-    changeCanvas()
+
+    
+    var img = new Image();
+    img.onload =async function() {
+        var width = img.width;
+        var height = img.height;
+        
+          var multiple = canvasData.w / width;
+          canvasData.w = multiple * width;
+          canvasData.h = multiple * height;
+          await nextTick();
+          // var height = img.height;
+          // console.log(width,height)
+          // debugger
+          // canvasData.h = multiple * height 
+          // ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // 将图片缩放到 canvas 尺寸  
+          // console.log("生成宽高", multiple * canvasData.w,canvasData.h)
+          // ctx.drawImage(img, 0, 0, multiple * canvasData.w,canvasData.h ); // 将图片缩放到 canvas 尺寸  
+ 
+        changeCanvas()
+    };
+    img.src = URL.createObjectURL(file);  // 将图片文件转换为 URL
   });
   reader.readAsDataURL(file);
   return false;
@@ -264,9 +290,17 @@ const renderCanvas = (cimgurl, ckey)=>{
     // ctx.globalCompositeOperation = 'destination-out'; // 设置合成模式为去除图像
       // 创建图片对象
       const img = new Image();
-      img.onload = function() {
+      img.onload =async function() {
           ++loadimg
+          
+          // var multiple = canvasData.w / img.width;
+          // var height = img.height;
+          // console.log(width,height)
+          // debugger
+          // canvasData.h = multiple * height 
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // 将图片缩放到 canvas 尺寸  
+          // console.log("生成宽高", multiple * canvasData.w,canvasData.h)
+          // ctx.drawImage(img, 0, 0, multiple * canvasData.w,canvasData.h ); // 将图片缩放到 canvas 尺寸  
  
 
           nextTick(()=>{
@@ -315,6 +349,7 @@ const renderCanvas = (cimgurl, ckey)=>{
                   const img2 = new Image(); 
                   img2.src = dataURL //cimgurl ? cimgurl : qrDemoImg.value ;
                   img2.onload = function() { 
+                    // console.log("二维码",dataURL)
                     ctx.drawImage(
                       img2, 
                       canvasData.x,
@@ -395,7 +430,8 @@ const renderCanvas = (cimgurl, ckey)=>{
         ctx.textAlign = 'center';  // 设置文字水平居中
         ctx.textBaseline = 'middle';  // 设置文字垂直居中
         // 绘制填充文字
-        ctx.fillText(ckey ? ckey :canvasData.txt, canvasData.fontx, canvasData.fonty); 
+        let txt = ckey ? (ckey*1).toString(16).toUpperCase() :canvasData.txt
+        ctx.fillText(txt, canvasData.fontx, canvasData.fonty); 
         
         resolve(true)
       }else{
