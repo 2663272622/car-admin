@@ -19,6 +19,9 @@
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
             </el-upload>
           </el-form-item> 
+          <el-form-item label="分辨率">
+              <el-input-number v-model="canvasData.DPI"  />
+          </el-form-item>
           <el-form-item label="画布宽度">
               <el-slider v-model="canvasData.w" @change="changeCanvas" :min="0" :max="1000" /> 
               <el-input-number v-model="canvasData.w" :precision="2" @change="changeCanvas" :step="1" :max="1000" />
@@ -108,20 +111,20 @@
           </el-form-item> 
 
           <el-form-item>
-            <el-button type="primary" @click="renderCanvas">渲染</el-button>
+            <!-- <el-button type="primary" @click="renderCanvas">渲染</el-button> -->
             <el-button type="primary" @click="exportCanvas">导出</el-button>
           </el-form-item>
         <!-- <img :src="qrDemoImg " :style="`width:${formData.size}; height:${formData.size};max-width:100%;max-height:100%; margin-top: 15px`" alt=""> -->
         </el-form>
         
       </div>
-      <div class="car-drawer-content-right bg-#cca6a6"> 
-        <canvas id="myCanvas"  style="border:1px solid #ccc" :width="canvasData.w" :height="canvasData.h"></canvas>
+      <div class="car-drawer-content-right bg-#ccc"> 
+        <canvas id="myCanvas"  style="border:1px solid #0000001f" :width="canvasData.w" :height="canvasData.h"></canvas>
         
         
         
         
-        <canvas id="myScanCanvas"  style="border:1px solid #ccc" :width="formData.size" :height="formData.size"></canvas>
+        <canvas id="myScanCanvas"  style="opacity:0" :width="formData.size" :height="formData.size"></canvas>
         
       </div>
     </div>
@@ -163,6 +166,7 @@ const formData = reactive({
 const canvasData = reactive({
   cimg:"",
   w:1000,
+  DPI:300,
   h:300,
   x:0,
   y:0,
@@ -187,12 +191,7 @@ const beforeAvatarUpload = (file) =>{
   return false;
 }
 const beforeCanvasUpload = (file) =>{
-  const reader = new FileReader(); 
-          // var multiple = canvasData.w / img.width;
-          // var height = img.height;
-          // // console.log(width,height)
-          // // debugger
-          // canvasData.h = multiple * height 
+  const reader = new FileReader();  
   reader.addEventListener('load', ()=> {
     canvasData.cimg = reader.result as string
 
@@ -205,15 +204,7 @@ const beforeCanvasUpload = (file) =>{
           var multiple = canvasData.w / width;
           canvasData.w = multiple * width;
           canvasData.h = multiple * height;
-          await nextTick();
-          // var height = img.height;
-          // console.log(width,height)
-          // debugger
-          // canvasData.h = multiple * height 
-          // ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // 将图片缩放到 canvas 尺寸  
-          // console.log("生成宽高", multiple * canvasData.w,canvasData.h)
-          // ctx.drawImage(img, 0, 0, multiple * canvasData.w,canvasData.h ); // 将图片缩放到 canvas 尺寸  
- 
+          await nextTick(); 
         changeCanvas()
     };
     img.src = URL.createObjectURL(file);  // 将图片文件转换为 URL
@@ -365,57 +356,7 @@ const renderCanvas = (cimgurl, ckey)=>{
 
           })
 
-
-      //     img2.onload = function() {
-      // //     renderScan(canvas,'square','',img2, canvasData.x, canvasData.y, formData.size)
-      //         // 计算圆形图片的裁剪区域
-      //         const radius = formData.size / 2;    // 圆形的半径
-      //         const centerX = canvasData.x + radius;  // 圆形的中心X坐标
-      //         const centerY = canvasData.y + radius;  // 圆形的中心X坐标
-
-      //         // 创建圆形的裁剪区域
-      //         ctx.save();  // 保存当前状态
-      //         ctx.beginPath();
-      //         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      //         ctx.closePath();
-      //         ctx.clip();  // 应用裁剪区域
-
-      //         // 在裁剪区域内绘制上传的图片
-      //         ctx.drawImage(
-      //           img2, 
-      //           canvasData.x,
-      //           canvasData.y, 
-      //           formData.size, 
-      //           formData.size,  
-      //         ); 
-              
-      //         let imageData = ctx.getImageData(
-      //           canvasData.x,
-      //           canvasData.y, 
-      //           formData.size, 
-      //           formData.size
-      //         );
-      //         let data = imageData.data;
-      //         // for (let i = 0; i < data.length; i += 4) {
-      //         //   let r = data[i];     
-      //         //   let g = data[i + 1]; 
-      //         //   let b = data[i + 2]; 
-      //         //   if (r > 200 && g > 200 && b > 200) {
-      //         //     data[i + 3] = 0; 
-      //         //   }
-      //         // }
-      //         console.log(imageData.data)
-      //         ctx.putImageData(imageData,canvasData.x,canvasData.y);
-              
-      //         // 恢复画布的裁剪区域，以便后续操作不受影响
-      //         ctx.restore();
-              
-      //       ++loadimg
-      //     };
-
-
-
-
+ 
 
 
 
@@ -463,57 +404,55 @@ const exportCanvas = ()=>{
     renderCanvas(imgurl, key).then(async()=>{ 
       // 将 Canvas 转换为 PNG 图片的 Data URL
       const dataURL = canvas.toDataURL('image/png');
-      // console.log(key,'--------------',dataURL)
-
-      transitionImg(dataURL, 30, 300).then(resBase64=>{
-        const imageBlob = base64ToBlob(resBase64,"image/png")
-        // 将图片添加到 ZIP 文件，文件名为 image1.jpg, image2.jpg 等
-        zip.file('scan.'+key+'.png', imageBlob);
-        loading.close()
-        
-        if(arr.length <= (index + 1)){
-          zip.generateAsync({ type: "blob" }).then(function(content) {
-              saveAs(content, "images.zip");  // 使用 FileSaver.js 保存并下载 ZIP 文件
-          });
-          return;
-        }else{
-          exportImg(++index)
-        }
-      })
+      const daurl150dpi = changeDpiDataUrl(dataURL, canvasData.DPI);
+      const imageBlob = base64ToBlob(daurl150dpi,"image/png")
+      // 将图片添加到 ZIP 文件，文件名为 image1.jpg, image2.jpg 等
+      zip.file('scan.'+key+'.png', imageBlob);
+      loading.close()
+      
+      if(arr.length <= (index + 1)){
+        zip.generateAsync({ type: "blob" }).then(function(content) {
+            saveAs(content, "images.zip");  // 使用 FileSaver.js 保存并下载 ZIP 文件
+        });
+        return;
+      }else{
+        exportImg(++index)
+      }
+      
     })
 
   }
   exportImg(0) 
 }
 
-function transitionImg(base64Image, targetWidthCm, targetDPI) {
-  return new Promise((resolve,reject)=>{
-    var daurl150dpi = changeDpiDataUrl(base64Image, 300);
-    resolve(daurl150dpi)
-    // const img = new Image();
-    // img.src = base64Image;
-    // img.onload = function() {
-    //   // 获取原始图像的宽高
-    //   const originalWidth = img.width;
-    //   const originalHeight = img.height;
-    //   // 计算目标图像宽度和高度
-    //   const targetWidthInches = targetWidthCm / 2.54;  // 将厘米转换为英寸
-    //   const targetWidth = targetWidthInches * targetDPI;  // 计算目标宽度（像素）
-    //   const targetHeight = targetWidth / originalWidth * originalHeight;  // 根据原始图像比例计算目标高度
-    //   // 创建canvas并绘制图像
-    //   const canvas = document.createElement("canvas");
-    //   const ctx = canvas.getContext("2d");
-    //   // 设置canvas尺寸为目标尺寸
-    //   canvas.width = targetWidth;
-    //   canvas.height = targetHeight;
-    //   // 绘制图像到canvas，调整为目标尺寸
-    //   ctx.drawImage(img, 0, 0, originalWidth, originalHeight, 0, 0, targetWidth, targetHeight);
+// function transitionImg(base64Image, targetWidthCm, targetDPI) {
+//   return new Promise((resolve,reject)=>{
+//     var daurl150dpi = changeDpiDataUrl(base64Image, canvasData.DPI);
+//     resolve(daurl150dpi)
+//     // const img = new Image();
+//     // img.src = base64Image;
+//     // img.onload = function() {
+//     //   // 获取原始图像的宽高
+//     //   const originalWidth = img.width;
+//     //   const originalHeight = img.height;
+//     //   // 计算目标图像宽度和高度
+//     //   const targetWidthInches = targetWidthCm / 2.54;  // 将厘米转换为英寸
+//     //   const targetWidth = targetWidthInches * targetDPI;  // 计算目标宽度（像素）
+//     //   const targetHeight = targetWidth / originalWidth * originalHeight;  // 根据原始图像比例计算目标高度
+//     //   // 创建canvas并绘制图像
+//     //   const canvas = document.createElement("canvas");
+//     //   const ctx = canvas.getContext("2d");
+//     //   // 设置canvas尺寸为目标尺寸
+//     //   canvas.width = targetWidth;
+//     //   canvas.height = targetHeight;
+//     //   // 绘制图像到canvas，调整为目标尺寸
+//     //   ctx.drawImage(img, 0, 0, originalWidth, originalHeight, 0, 0, targetWidth, targetHeight);
 
-    //   // 导出处理后的图片为DataURL
-    //   const newImageDataURL = canvas.toDataURL("image/png"); 
-    // };
-  })
-};
+//     //   // 导出处理后的图片为DataURL
+//     //   const newImageDataURL = canvas.toDataURL("image/png"); 
+//     // };
+//   })
+// };
 
 function base64ToBlob(base64, mimeType) {
     // 移除 Base64 字符串的头部 (如：data:image/png;base64,)
@@ -563,6 +502,8 @@ watch(()=>modelValue.value,()=>{
       height: 100%;
       padding: 10px 5px;
       box-sizing: border-box;
+      overflow: hidden;
+      overflow-y: auto;
     }
     .car-drawer-content-left{
       width: 300px;
