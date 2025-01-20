@@ -463,30 +463,57 @@ const exportCanvas = ()=>{
     renderCanvas(imgurl, key).then(async()=>{ 
       // 将 Canvas 转换为 PNG 图片的 Data URL
       const dataURL = canvas.toDataURL('image/png');
-      console.log(key,'--------------',dataURL)
-      const imageBlob = base64ToBlob(dataURL,"image/png")
-      // 将图片添加到 ZIP 文件，文件名为 image1.jpg, image2.jpg 等
-      zip.file('scan.'+key+'.png', imageBlob);
-      loading.close()
-      // 创建一个下载链接并触发下载
-      // const link = document.createElement('a');
-      // link.href = dataURL;
-      // link.download = 'scan.'+key+'.png';  // 设置下载的文件名
-      // link.click();
-      
-      if(arr.length <= (index + 1)){
-        zip.generateAsync({ type: "blob" }).then(function(content) {
-            saveAs(content, "images.zip");  // 使用 FileSaver.js 保存并下载 ZIP 文件
-        });
-        return;
-      }else{
-        exportImg(++index)
-      }
+      // console.log(key,'--------------',dataURL)
+
+      transitionImg(dataURL, 30, 300).then(resBase64=>{
+        const imageBlob = base64ToBlob(resBase64,"image/png")
+        // 将图片添加到 ZIP 文件，文件名为 image1.jpg, image2.jpg 等
+        zip.file('scan.'+key+'.png', imageBlob);
+        loading.close()
+        
+        if(arr.length <= (index + 1)){
+          zip.generateAsync({ type: "blob" }).then(function(content) {
+              saveAs(content, "images.zip");  // 使用 FileSaver.js 保存并下载 ZIP 文件
+          });
+          return;
+        }else{
+          exportImg(++index)
+        }
+      })
     })
 
   }
   exportImg(0) 
 }
+
+function transitionImg(base64Image, targetWidthCm, targetDPI) {
+  return new Promise((resolve,reject)=>{
+    var daurl150dpi = changeDpiDataUrl(base64Image, 300);
+    resolve(daurl150dpi)
+    // const img = new Image();
+    // img.src = base64Image;
+    // img.onload = function() {
+    //   // 获取原始图像的宽高
+    //   const originalWidth = img.width;
+    //   const originalHeight = img.height;
+    //   // 计算目标图像宽度和高度
+    //   const targetWidthInches = targetWidthCm / 2.54;  // 将厘米转换为英寸
+    //   const targetWidth = targetWidthInches * targetDPI;  // 计算目标宽度（像素）
+    //   const targetHeight = targetWidth / originalWidth * originalHeight;  // 根据原始图像比例计算目标高度
+    //   // 创建canvas并绘制图像
+    //   const canvas = document.createElement("canvas");
+    //   const ctx = canvas.getContext("2d");
+    //   // 设置canvas尺寸为目标尺寸
+    //   canvas.width = targetWidth;
+    //   canvas.height = targetHeight;
+    //   // 绘制图像到canvas，调整为目标尺寸
+    //   ctx.drawImage(img, 0, 0, originalWidth, originalHeight, 0, 0, targetWidth, targetHeight);
+
+    //   // 导出处理后的图片为DataURL
+    //   const newImageDataURL = canvas.toDataURL("image/png"); 
+    // };
+  })
+};
 
 function base64ToBlob(base64, mimeType) {
     // 移除 Base64 字符串的头部 (如：data:image/png;base64,)
