@@ -40,6 +40,7 @@
     "ali-oss": "^6.21.0",
     "animate.css": "^4.1.1",
     "axios": "^1.7.7",
+    "changedpi": "^1.0.4",
     "codemirror": "^5.65.18",
     "codemirror-editor-vue3": "^2.8.0",
     "echarts": "^5.5.1",

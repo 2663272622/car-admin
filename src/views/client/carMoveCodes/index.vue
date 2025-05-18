@@ -432,5 +432,6 @@ function handleDownload(id?:string){
     window.URL.revokeObjectURL(url);
   });
 }
+ 
 </script>
 
